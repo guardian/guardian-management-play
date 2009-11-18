@@ -87,7 +87,7 @@ public class ManifestTest {
     }
 
 
-    public class StubApplicationFileProvider implements ApplicationFileProvider {
+    public class StubApplicationFileProvider extends ApplicationFileProvider {
 
         private List<String> fileToReturn;
         private String pathToRootOfApplication;
