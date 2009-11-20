@@ -20,8 +20,7 @@ public class ConnectionProxyTest {
 	@Mock Connection connectionMock;
 	private ConnectionProxy connectionProxy;
 	@Mock PreparedStatement preparedStatementMock;
-	@Mock
-    TimingMetric metricMock;
+	@Mock TimingMetric metricMock;
 
 
 	@Before

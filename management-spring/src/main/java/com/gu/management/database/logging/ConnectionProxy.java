@@ -12,9 +12,9 @@ class ConnectionProxy implements InvocationHandler {
 
 	protected static final Method PREPARE_STATEMENT_METHOD;
 	private final Connection targetConnection;
-	private final TimingMetric metric;
+    private final PreparedStatementProxyFactory preparedStatementProxyFactory;
 
-	static {
+    static {
 		try {
 			PREPARE_STATEMENT_METHOD = Connection.class.getDeclaredMethod("prepareStatement", new Class[] { String.class });
 		} catch (SecurityException e) {
@@ -26,22 +26,19 @@ class ConnectionProxy implements InvocationHandler {
 
 	ConnectionProxy(Connection targetConnection, TimingMetric metric) {
 		this.targetConnection = targetConnection;
-		this.metric = metric;
+        this.preparedStatementProxyFactory = new PreparedStatementProxyFactory(metric);
 	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		if (PREPARE_STATEMENT_METHOD.equals(method)) {
 			String sqlQuery = (String) args[0];
-			return createPreparedStatementProxy((PreparedStatement) method.invoke(targetConnection, args), sqlQuery);
+			return preparedStatementProxyFactory.createPreparedStatementProxy((PreparedStatement) method.invoke(targetConnection, args), sqlQuery);
 		}
 
 		return method.invoke(targetConnection, args);
 	}
 
-	private PreparedStatement createPreparedStatementProxy(PreparedStatement targetStatement, String sqlQuery) {
-		return ProxyHelper.proxy(targetStatement, new PreparedStatementProxy(targetStatement, sqlQuery,
-				metric));
-	}
+	
 
 }
