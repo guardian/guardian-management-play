@@ -14,7 +14,7 @@ class PreparedStatementProxy implements InvocationHandler {
 
 	static final Method EXECUTE_QUERY_METHOD;
 	static final Method EXECUTE_METHOD;
-	static final Method EXECUTE_UPDATE;
+	static final Method EXECUTE_UPDATE_METHOD;
 
 	private static final Logger LOG = Logger.getLogger(PreparedStatementProxy.class);
 
@@ -24,11 +24,11 @@ class PreparedStatementProxy implements InvocationHandler {
 	private String sqlComment;
 	private final TimingMetric metric;
 
-	static {
+    static {
 		try {
 			EXECUTE_METHOD = PreparedStatement.class.getDeclaredMethod("execute", new Class[] {});
 			EXECUTE_QUERY_METHOD = PreparedStatement.class.getDeclaredMethod("executeQuery", new Class[] {});
-			EXECUTE_UPDATE = PreparedStatement.class.getDeclaredMethod("executeUpdate", new Class[] {});
+			EXECUTE_UPDATE_METHOD = PreparedStatement.class.getDeclaredMethod("executeUpdate", new Class[] {});
 		} catch (SecurityException e) {
 			throw new RuntimeException("Cannot reflect into class", e);
 		} catch (NoSuchMethodException e) {
@@ -45,7 +45,7 @@ class PreparedStatementProxy implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-		if ((EXECUTE_METHOD.equals(method) || EXECUTE_QUERY_METHOD.equals(method) || EXECUTE_UPDATE.equals(method))) {
+		if ((EXECUTE_METHOD.equals(method) || EXECUTE_QUERY_METHOD.equals(method) || EXECUTE_UPDATE_METHOD.equals(method))) {
 
 			LoggingStopWatch loggingStopWatch = new LoggingStopWatch(LOG, "Query " + getQueryDisplayName(), Level.DEBUG);
 
