@@ -14,6 +14,13 @@
     <artifactId>management-guice</artifactId>
 
     <dependencies>
+
+        <!--
+
+        DO NOT under any circumstances add a dependency to spring or hibernate here please.
+
+         -->
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>management-core</artifactId>

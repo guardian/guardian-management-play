@@ -44,7 +44,8 @@ public class Manifest {
 		try {
 			revisionNumber = Long.parseLong(getValue(line));
 		} catch(NumberFormatException e) {
-			LOGGER.info("Wrong revision number");
+			LOGGER.info("Could not parse revision number from '" + line + "'; using 0 instead");
+            revisionNumber = 0L;
 		}
 	}
 
