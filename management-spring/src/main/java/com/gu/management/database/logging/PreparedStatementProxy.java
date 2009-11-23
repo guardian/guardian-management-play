@@ -6,6 +6,7 @@ import net.sf.cglib.proxy.InvocationHandler;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.util.concurrent.Callable;
@@ -39,7 +40,7 @@ class PreparedStatementProxy implements InvocationHandler {
 			Object result = loggingStopWatch.executeAndLog(new Callable<Object>() {
 				@Override
 				public Object call() throws Exception {
-					return method.invoke(targetStatement, args);
+					return invokeMethodAndThrowAnyUnderlyingException(method, args);
 				}
 			});
 
@@ -47,8 +48,20 @@ class PreparedStatementProxy implements InvocationHandler {
 			return result;
 		}
 
-		return method.invoke(targetStatement, args);
-	}
+        return invokeMethodAndThrowAnyUnderlyingException(method, args);
+    }
+
+    private Object invokeMethodAndThrowAnyUnderlyingException(Method method, Object[] args) throws Exception {
+        try {
+            return method.invoke(targetStatement, args);
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof Exception) {
+                throw (Exception) cause;
+            }
+            throw e;
+        }
+    }
 
     private String getQueryDisplayName() {
 		return "\"" + getSqlComment() + "\"";

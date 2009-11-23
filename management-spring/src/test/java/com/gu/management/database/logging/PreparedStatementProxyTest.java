@@ -10,6 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -30,6 +31,22 @@ public class PreparedStatementProxyTest {
 	public void setUp() throws Exception {
 		preparedStatementProxy = new PreparedStatementProxy(preparedStatementMock, SQL_QUERY, metricMock, timeableMethodPredicate);
 	}
+
+    @Test(expected = SQLException.class)
+    public void shouldThrowUnderlyingExceptionRatherThanTheInvocationTargetExceptionYouGetFromInvokingAMethodWithReflection() throws Throwable {
+        Method methodThatThrowsException = PreparedStatement.class.getMethod("isClosed");
+        when(preparedStatementMock.isClosed()).thenThrow(new SQLException("AARGH!"));
+
+        preparedStatementProxy.invoke(null, methodThatThrowsException, new Object[] {});
+    }
+
+    @Test(expected = SQLException.class)
+    public void shouldThrowUnderlyingExceptionRatherThanTheInvocationTargetExceptionYouGetFromInvokingAMethodWithReflectionWhenTiming() throws Throwable {
+        Method methodThatThrowsException = PreparedStatement.class.getMethod("isClosed");
+        when(preparedStatementMock.isClosed()).thenThrow(new SQLException("AARGH!"));
+        when(timeableMethodPredicate.apply(methodThatThrowsException)).thenReturn(true);
+        preparedStatementProxy.invoke(null, methodThatThrowsException, new Object[] {});
+    }
 
 	@Test
 	public void shouldCallTimingMetricIfPredicateSaysToApplyTiming() throws Throwable {
