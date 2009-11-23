@@ -12,6 +12,6 @@ public class PreparedStatementProxyFactory {
     }
 
     PreparedStatement createPreparedStatementProxy(PreparedStatement targetStatement, String sqlQuery) {
-        return ProxyHelper.proxy(targetStatement, new PreparedStatementProxy(targetStatement, sqlQuery, metric));
+        return ProxyHelper.proxy(targetStatement, new PreparedStatementProxy(targetStatement, sqlQuery, metric, new TimeableMethodPredicate()));
     }
 }

@@ -5,13 +5,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PreparedStatementProxyTest {
@@ -21,30 +24,33 @@ public class PreparedStatementProxyTest {
 	private PreparedStatementProxy preparedStatementProxy;
 	@Mock PreparedStatement preparedStatementMock;
 	@Mock TimingMetric metricMock;
+    @Mock TimeableMethodPredicate timeableMethodPredicate;
 
 	@Before
 	public void setUp() throws Exception {
-		preparedStatementProxy = new PreparedStatementProxy(preparedStatementMock, SQL_QUERY, metricMock);
+		preparedStatementProxy = new PreparedStatementProxy(preparedStatementMock, SQL_QUERY, metricMock, timeableMethodPredicate);
 	}
 
 	@Test
-	public void shouldCallTimingMetricWithTimeSpentOnExecuteMethod() throws Throwable {
-		preparedStatementProxy.invoke(null, PreparedStatementProxy.EXECUTE_METHOD, new Object[] {});
+	public void shouldCallTimingMetricIfPredicateSaysToApplyTiming() throws Throwable {
+        Method methodToTime = Object.class.getDeclaredMethod("toString");
+        
+        when(timeableMethodPredicate.apply(methodToTime)).thenReturn(true);
+
+		preparedStatementProxy.invoke(null, methodToTime, new Object[] {});
 
         verify(metricMock).recordTimeSpent(anyInt());
 	}
 
-	@Test
-	public void shouldCallTimingMetricWithTimeSpentOnExecuteUpdateMethod() throws Throwable {
-		preparedStatementProxy.invoke(null, PreparedStatementProxy.EXECUTE_UPDATE_METHOD, new Object[] {});
+    @Test
+	public void shouldNotCallTimingMetricIfPredicateSaysNotToApplyTiming() throws Throwable {
+        Method methodToNotTime = Object.class.getDeclaredMethod("toString");
 
-        verify(metricMock).recordTimeSpent(anyInt());
+        when(timeableMethodPredicate.apply(methodToNotTime)).thenReturn(false);
+
+		preparedStatementProxy.invoke(null, methodToNotTime, new Object[] {});
+
+        verifyZeroInteractions(metricMock);
 	}
 
-	@Test
-	public void shouldCallTimingMetricWithTimeSpentOnExecuteQueryMethod() throws Throwable {
-		preparedStatementProxy.invoke(null, PreparedStatementProxy.EXECUTE_QUERY_METHOD, new Object[] {});
-
-        verify(metricMock).recordTimeSpent(anyInt());
-	}
 }

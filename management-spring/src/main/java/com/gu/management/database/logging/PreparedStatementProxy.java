@@ -12,9 +12,6 @@ import java.util.concurrent.Callable;
 
 class PreparedStatementProxy implements InvocationHandler {
 
-	static final Method EXECUTE_QUERY_METHOD;
-	static final Method EXECUTE_METHOD;
-	static final Method EXECUTE_UPDATE_METHOD;
 
 	private static final Logger LOG = Logger.getLogger(PreparedStatementProxy.class);
 
@@ -23,29 +20,19 @@ class PreparedStatementProxy implements InvocationHandler {
 
 	private String sqlComment;
 	private final TimingMetric metric;
-
-    static {
-		try {
-			EXECUTE_METHOD = PreparedStatement.class.getDeclaredMethod("execute", new Class[] {});
-			EXECUTE_QUERY_METHOD = PreparedStatement.class.getDeclaredMethod("executeQuery", new Class[] {});
-			EXECUTE_UPDATE_METHOD = PreparedStatement.class.getDeclaredMethod("executeUpdate", new Class[] {});
-		} catch (SecurityException e) {
-			throw new RuntimeException("Cannot reflect into class", e);
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException("Cannot find method", e);
-		}
-	}
+    private final TimeableMethodPredicate timeableMethodPredicate;
 
 	PreparedStatementProxy(PreparedStatement targetStatement, String sqlQuery,
-	                       TimingMetric metric) {
+                           TimingMetric metric, TimeableMethodPredicate timeableMethodPredicate) {
 		this.targetStatement = targetStatement;
 		this.sqlQuery = sqlQuery;
 		this.metric = metric;
+        this.timeableMethodPredicate = timeableMethodPredicate;
 	}
 
 	@Override
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-		if ((EXECUTE_METHOD.equals(method) || EXECUTE_QUERY_METHOD.equals(method) || EXECUTE_UPDATE_METHOD.equals(method))) {
+		if (timeableMethodPredicate.apply(method)) {
 
 			LoggingStopWatch loggingStopWatch = new LoggingStopWatch(LOG, "Query " + getQueryDisplayName(), Level.DEBUG);
 
@@ -63,7 +50,7 @@ class PreparedStatementProxy implements InvocationHandler {
 		return method.invoke(targetStatement, args);
 	}
 
-	private String getQueryDisplayName() {
+    private String getQueryDisplayName() {
 		return "\"" + getSqlComment() + "\"";
 	}
 
