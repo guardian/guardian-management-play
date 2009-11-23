@@ -11,11 +11,12 @@ import java.sql.SQLException;
 public class LoggingDataSource extends DelegatingDataSource {
 
 	private static final Logger LOG = Logger.getLogger(LoggingDataSource.class);
+
     private final PreparedStatementProxyFactory preparedStatementProxyFactory;
 
 
-    public LoggingDataSource(PreparedStatementProxyFactory preparedStatementProxyFactory) {
-        this.preparedStatementProxyFactory = preparedStatementProxyFactory;
+    public LoggingDataSource(TimingMetric metric) {
+        this.preparedStatementProxyFactory = new PreparedStatementProxyFactory(metric);
 
         if (VersionUtils.isAtLeastJavaVersion14()) {
 			LOG.info("Successfully initiated the class "+VersionUtils.class+" as a workaround for bug #13545");

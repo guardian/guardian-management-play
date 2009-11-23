@@ -1,27 +1,23 @@
 package com.gu.management.database.logging;
 
+import com.google.common.collect.Sets;
 import net.sf.cglib.proxy.InvocationHandler;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
 
 
 class ConnectionProxy implements InvocationHandler {
 
-	protected static final Method PREPARE_STATEMENT_METHOD;
 	private final Connection targetConnection;
     private final PreparedStatementProxyFactory preparedStatementProxyFactory;
+    private final Set<String> methodNames = newHashSet("prepareStatement", "prepareCall");
 
-    static {
-		try {
-			PREPARE_STATEMENT_METHOD = Connection.class.getDeclaredMethod("prepareStatement", new Class[] { String.class });
-		} catch (SecurityException e) {
-			throw new RuntimeException("Cannot reflect into class", e);
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException("Cannot find method", e);
-		}
-	}
+
 
 	ConnectionProxy(Connection targetConnection, PreparedStatementProxyFactory preparedStatementProxyFactory) {
 		this.targetConnection = targetConnection;
@@ -30,7 +26,7 @@ class ConnectionProxy implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		if (PREPARE_STATEMENT_METHOD.equals(method)) {
+		if (methodNames.contains(method.getName())) {
 			String sqlQuery = (String) args[0];
             PreparedStatement preparedStatement = (PreparedStatement) method.invoke(targetConnection, args);
             return preparedStatementProxyFactory.createPreparedStatementProxy(preparedStatement, sqlQuery);

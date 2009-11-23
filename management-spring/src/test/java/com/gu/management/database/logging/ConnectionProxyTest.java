@@ -9,9 +9,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.util.MockUtil;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
@@ -24,20 +26,18 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ConnectionProxyTest {
 	private static final String SQL_QUERY = "select * from dual";
-	private Method prepareSqlMethod;
-    private Method isReadOnlyMethod;
 
 	@Mock Connection connectionMock;
 	private ConnectionProxy connectionProxy;
 	@Mock PreparedStatement actualPreparedStatement, preparedStatementWrapper;
+    @Mock CallableStatement callableStatement, callableStatementWrapper;
 	@Mock PreparedStatementProxyFactory preparedStatementProxyFactory;
-
+    MockUtil mockUtil = new MockUtil();
 
 	@Before
 	public void setUp() throws Exception {
 		connectionProxy = new ConnectionProxy(connectionMock, preparedStatementProxyFactory);
-		prepareSqlMethod = Connection.class.getMethod("prepareStatement", new Class[] { String.class });
-        isReadOnlyMethod = Connection.class.getMethod("isReadOnly", new Class[] { });
+
 	}
 
 
@@ -45,16 +45,35 @@ public class ConnectionProxyTest {
     public void shouldCreateAndReturnAPreparedStatementProxyWhenPrepareStatementIsCalled() throws Throwable {
         when(connectionMock.prepareStatement(SQL_QUERY)).thenReturn(actualPreparedStatement);
         when(preparedStatementProxyFactory.createPreparedStatementProxy(actualPreparedStatement, SQL_QUERY)).thenReturn(preparedStatementWrapper);
+        connectionMock.prepareStatement(SQL_QUERY);
+        Method executeMethod=methodExecutedOn(connectionMock);
 
-        PreparedStatement returnedPreparedStatement = (PreparedStatement) connectionProxy.invoke(connectionMock, prepareSqlMethod, new Object[] { SQL_QUERY });
+        PreparedStatement returnedPreparedStatement = (PreparedStatement) connectionProxy.invoke(connectionMock, executeMethod, new Object[] { SQL_QUERY });
         assertThat(returnedPreparedStatement, sameInstance(preparedStatementWrapper));
     }
 
     @Test
+    public void shouldCreateAndReturnAPreparedStatementProxyWhenCallableStatementIsCalled() throws Throwable {
+        when(connectionMock.prepareCall(SQL_QUERY)).thenReturn(callableStatement);
+        when(preparedStatementProxyFactory.createPreparedStatementProxy(callableStatement, SQL_QUERY)).thenReturn(callableStatementWrapper);
+        connectionMock.prepareCall(SQL_QUERY);
+        Method executeMethod=methodExecutedOn(connectionMock);
+
+        CallableStatement returnedCallableStatement = (CallableStatement) connectionProxy.invoke(connectionMock, executeMethod, new Object[] { SQL_QUERY });
+        assertThat(returnedCallableStatement, sameInstance(callableStatementWrapper));
+    }
+
+    @Test
     public void shouldNotCreateAProxyWhenNotCreatingAPreparedStatement() throws Throwable {
-        connectionProxy.invoke(connectionMock, isReadOnlyMethod, new Object[] {  });
+        connectionMock.isReadOnly();
+        Method readOnlyMethod=methodExecutedOn(connectionMock);
+        connectionProxy.invoke(connectionMock, readOnlyMethod, new Object[] {  });
         verifyZeroInteractions(preparedStatementProxyFactory);
     }
 
+
+     private Method methodExecutedOn(Object mockObject) {
+        return mockUtil.getMockHandler(mockObject).getRegisteredInvocations().get(0).getMethod();
+    }
 
 }
