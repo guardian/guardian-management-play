@@ -14,11 +14,11 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class SurpressStackTraceLoggingSwitchTest {
+public class SuppressStackTraceLoggingSwitchTest {
 
     private Map<Appender, Layout> orignalLayoutState = new HashMap<Appender, Layout>();
     private ConsoleAppender testAppender;
-    private SurpressStackTraceLoggingSwitch theSwitch;
+    private SuppressStackTraceLoggingSwitch theSwitch;
 
     @Before
     public void getOriginalLoggerLayouts() {
@@ -33,7 +33,7 @@ public class SurpressStackTraceLoggingSwitchTest {
             orignalLayoutState.put(appender, appender.getLayout());
         }
 
-        theSwitch = new SurpressStackTraceLoggingSwitch();
+        theSwitch = new SuppressStackTraceLoggingSwitch();
     }
 
     @After
@@ -49,8 +49,8 @@ public class SurpressStackTraceLoggingSwitchTest {
 
         theSwitch.switchOn();
         for (Appender appender : orignalLayoutState.keySet()) {
-            assertThat(appender.getLayout(), instanceOf(StackTraceSurpressingLayout.class));
-            StackTraceSurpressingLayout layout = (StackTraceSurpressingLayout) appender.getLayout();
+            assertThat(appender.getLayout(), instanceOf(StackTraceSuppressingLayout.class));
+            StackTraceSuppressingLayout layout = (StackTraceSuppressingLayout) appender.getLayout();
             assertThat(layout.getWrappedLayout(), equalTo(orignalLayoutState.get(appender)));
         }
 
@@ -66,8 +66,8 @@ public class SurpressStackTraceLoggingSwitchTest {
         assertTrue(theSwitch.isSwitchedOn());
 
         for (Appender appender : orignalLayoutState.keySet()) {
-            assertThat(appender.getLayout(), instanceOf(StackTraceSurpressingLayout.class));
-            StackTraceSurpressingLayout layout = (StackTraceSurpressingLayout) appender.getLayout();
+            assertThat(appender.getLayout(), instanceOf(StackTraceSuppressingLayout.class));
+            StackTraceSuppressingLayout layout = (StackTraceSuppressingLayout) appender.getLayout();
             assertThat(layout.getWrappedLayout(), equalTo(orignalLayoutState.get(appender)));
         }
     }
@@ -77,8 +77,8 @@ public class SurpressStackTraceLoggingSwitchTest {
 
         theSwitch.switchOn();
         for (Appender appender : orignalLayoutState.keySet()) {
-            assertThat(appender.getLayout(), instanceOf(StackTraceSurpressingLayout.class));
-            StackTraceSurpressingLayout layout = (StackTraceSurpressingLayout) appender.getLayout();
+            assertThat(appender.getLayout(), instanceOf(StackTraceSuppressingLayout.class));
+            StackTraceSuppressingLayout layout = (StackTraceSuppressingLayout) appender.getLayout();
             assertThat(layout.getWrappedLayout(), equalTo(orignalLayoutState.get(appender)));
         }
 

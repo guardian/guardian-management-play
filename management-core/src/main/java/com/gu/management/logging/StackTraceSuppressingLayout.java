@@ -3,11 +3,11 @@ package com.gu.management.logging;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 
-public class StackTraceSurpressingLayout extends Layout {
+public class StackTraceSuppressingLayout extends Layout {
 
     private Layout wrappedLayout;
 
-    public StackTraceSurpressingLayout(Layout wrappedLayout) {
+    public StackTraceSuppressingLayout(Layout wrappedLayout) {
         this.wrappedLayout = wrappedLayout;
     }
 
