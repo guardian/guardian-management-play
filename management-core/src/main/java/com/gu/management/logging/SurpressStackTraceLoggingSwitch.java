@@ -15,12 +15,10 @@ public class SurpressStackTraceLoggingSwitch implements Switchable {
     // The internal state is set to
     // off initially as this reflects log4j's state on startup, the constuctor is
     // responsible for turning supression on and updating log4j's state.
-    // The default state on startup can be changed using the setInitiallySwitchedOn
-    // method.
     private boolean isOn = false;
 
     public SurpressStackTraceLoggingSwitch() {
-        setInitiallySwitchedOn(true);  
+        switchOn();
     }
 
     @Override
@@ -39,9 +37,9 @@ public class SurpressStackTraceLoggingSwitch implements Switchable {
                     appender.setLayout((surpressingLayout.getWrappedLayout()));
                 }
             }
+            LOGGER.debug("Switched to full stacktrace mode.");
         }
         isOn = false;
-        LOGGER.debug("Switched to full stacktrace mode.");
     }
 
     @Override
@@ -52,9 +50,9 @@ public class SurpressStackTraceLoggingSwitch implements Switchable {
                 Appender appender = (Appender) appenders.nextElement();
                 appender.setLayout(new StackTraceSurpressingLayout(appender.getLayout()));
             }
+            LOGGER.debug("Switched to supressed stacktrace mode.");
         }
         isOn = true;
-        LOGGER.debug("Switched to supressed stacktrace mode.");
     }
 
     @Override
@@ -63,16 +61,7 @@ public class SurpressStackTraceLoggingSwitch implements Switchable {
     }
 
     @Override
-    public String getName() {
-        return "surpressStackTrace";
-    }
-
-    @Deprecated
-    public void setInitiallySwitchedOn(boolean initialState) {
-        if (initialState) {
-            switchOn();
-        } else {
-            switchOff();
-        }
+    public String getWordForUrl() {
+        return "surpress-stack-trace";
     }
 }
