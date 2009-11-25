@@ -1,5 +1,6 @@
 package com.gu.management.switching;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -19,22 +20,20 @@ public class SwitchboardServlet extends HttpServlet {
             "<head><title>Switchboard</title></head>\n" +
             "<body>\n" +
             "\t<form method=\"POST\">\n" +
-            "\t\t<input type=\"submit\" value=\"update\" />\n" +
-            "\n" +
             "<table border=\"1\">\n" +
-            "\t<tr><th>Switch name</th><th>Description</th><th>State</th><th></th></tr>";
+            "\t<tr><th>Switch name</th><th>Description</th><th>State</th></tr>";
 
-    private static final String MANAGEMENT_PAGE_FOOT = "</table>\n" +
-            "\t\t<input type=\"submit\" value=\"update\" />\n" +
+    private static final String MANAGEMENT_PAGE_FOOT =
+            "</table>\n" +
             "\t</form>\n" +
             "</body>\n" +
             "</html>";
 
     private static final String SWITCH_TABLE_ROW = "<tr>" +
-            "<td>%1$s</td>" +
+            "<td><a href=\"?switch=%1$s\">%1$s</a></td>" +
             "<td>%2$s</td>" +
-            "<td><select name=\"%1$s\">%3$s</select></td>" +
-            "<td><input type=\"submit\" value=\"update\" /></td></tr>";
+            "<td style=\"width: 100px; text-align: center;\">%3$s</td>" +
+            "</tr>";
 
     public SwitchboardServlet(Collection<Switchable> switches) {
         this.switches = new ArrayList<Switchable>(switches);
@@ -50,15 +49,21 @@ public class SwitchboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("text/html");
+
+        String switchToShow = request.getParameter("switch");
+
         OutputStreamWriter fileWriter = new OutputStreamWriter(response.getOutputStream());
 
         fileWriter.write(MANAGEMENT_PAGE_HEAD);
 
         for (Switchable switchable : switches) {
-            fileWriter.write(String.format(SWITCH_TABLE_ROW,
-                    switchable.getWordForUrl(),
-                    switchable.getDescription(),
-                    getOptionsFor(switchable)));
+
+            if (StringUtils.isEmpty(switchToShow) || switchToShow.equals(switchable.getWordForUrl())) {
+                fileWriter.write(String.format(SWITCH_TABLE_ROW,
+                        switchable.getWordForUrl(),
+                        switchable.getDescription(),
+                        getButtonsFor(switchable)));
+            }
         }
 
         fileWriter.write(MANAGEMENT_PAGE_FOOT);
@@ -66,18 +71,17 @@ public class SwitchboardServlet extends HttpServlet {
         fileWriter.flush();
     }
 
-    private String getOptionsFor(Switchable switchable) {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("<option value=\"on\" ")
-                .append(switchable.isSwitchedOn() ? "selected" : "")
-                .append(">on</option>");
-
-        builder.append("<option value=\"off\" ")
-                .append(!switchable.isSwitchedOn() ? "selected" : "")
-                .append(">off</option>");
-
-        return builder.toString();
+    private String getButtonsFor(Switchable switchable) {
+        if (switchable.isSwitchedOn()) {
+            return String.format(
+                    "<span style=\"color: ForestGreen\"> ON </span>" +
+                    "<input type=\"submit\" name=\"%s\" value=\"OFF\" />",
+                    switchable.getWordForUrl());
+        } else {
+            return String.format(
+                    "<input type=\"submit\" name=\"%s\" value=\"ON\"/>" +
+                    "<span style=\"color: DarkRed\"> OFF </span>", switchable.getWordForUrl());
+        }
     }
 
 
@@ -87,9 +91,9 @@ public class SwitchboardServlet extends HttpServlet {
         for (Switchable switchable : switches) {
             String newState = request.getParameter(switchable.getWordForUrl());
 
-            if ("on".equals(newState)) {
+            if ("ON".equalsIgnoreCase(newState)) {
                 switchOnWithLogging(switchable);
-            } else if ("off".equals(newState)) {
+            } else if ("OFF".equalsIgnoreCase(newState)) {
                 switchOffWithLogging(switchable);
             }
         }
