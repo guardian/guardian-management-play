@@ -4,7 +4,7 @@
 
     <groupId>com.gu</groupId>
     <artifactId>management</artifactId>
-    <version>1.8</version>
+    <version>1.9-SNAPSHOT</version>
 
     <name>Guardian Management helpers</name>
 
@@ -84,10 +84,10 @@
     
     <scm>
         <connection>
-            scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/tags/management-1.8
+            scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/trunk/management
         </connection>
         <developerConnection>
-            scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/tags/management-1.8
+            scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/trunk/management
         </developerConnection>
     </scm>
 
