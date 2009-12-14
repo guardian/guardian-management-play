@@ -32,7 +32,7 @@ public class ManagementUrlDiscoveryControllerTest {
 		List<String> urls = asList("/url1");
 		when(service.getManagementUrls()).thenReturn(urls);
 
-		controller.listManagementUrls(response);
+		controller.handleRequestInternal(null, response);
 
 		assertThat(response.getContentAsString(), containsString("<a href=\"management/url1\">/url1</a>"));
 	}
