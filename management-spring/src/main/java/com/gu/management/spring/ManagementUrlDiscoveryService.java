@@ -32,7 +32,6 @@ public class ManagementUrlDiscoveryService {
         this.handlerMappings = ImmutableList.copyOf(handlerMappings);
     }
 
-	@SuppressWarnings("unchecked")
 	private Set<String> getAllRequestableUrls(AbstractUrlHandlerMapping urlHandlerMappings) {
 		Set<String> urls = Sets.newTreeSet();       
 

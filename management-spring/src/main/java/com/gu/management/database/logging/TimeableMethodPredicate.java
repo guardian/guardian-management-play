@@ -1,13 +1,11 @@
 package com.gu.management.database.logging;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Sets;
+import static com.google.common.collect.Sets.newHashSet;
 
 import java.lang.reflect.Method;
-import java.sql.PreparedStatement;
 import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
+import com.google.common.base.Predicate;
 
 
 public class TimeableMethodPredicate implements Predicate<Method> {

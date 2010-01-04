@@ -1,27 +1,21 @@
 package com.gu.management.database.logging;
 
-import com.gu.management.timing.TimingMetric;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.internal.util.MockUtil;
-import org.mockito.runners.MockitoJUnitRunner;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.internal.util.MockUtil;
+import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConnectionProxyTest {

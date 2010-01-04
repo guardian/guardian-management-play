@@ -1,21 +1,21 @@
 package com.gu.management.database.logging;
 
-import com.gu.management.timing.TimingMetric;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import com.gu.management.timing.TimingMetric;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PreparedStatementProxyTest {

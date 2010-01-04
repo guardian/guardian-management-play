@@ -1,36 +1,42 @@
 package com.gu.management.spring;
 
-import com.google.common.collect.ImmutableMap;
+import static com.gu.testsupport.matchers.Matchers.collectionContainingOnly;
+import static com.gu.testsupport.matchers.Matchers.collectionOfSize;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.Arrays;
+import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.Properties;
-
-import static com.gu.testsupport.matchers.Matchers.collectionContainingOnly;
-import static com.gu.testsupport.matchers.Matchers.collectionOfSize;
-import static org.hamcrest.MatcherAssert.assertThat;
+import com.google.common.collect.ImmutableMap;
 
 public class ManagementUrlDiscoveryServiceTest {
 
-    @Before
+    private SimpleUrlHandlerMapping mapping;
+
+	@Before
 	public void init() throws Exception {
 		MockitoAnnotations.initMocks(this);
+		mapping = new SimpleUrlHandlerMapping();
+		mapping.setApplicationContext(new GenericWebApplicationContext());
 	}
 
 	@Test
 	public void shouldReturnListOfManagementUrlsGatheredFromHandlerMapItWasInitialisedWith() {
-        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-        mapping.setUrlMap(ImmutableMap.of("/management/url1", (Object) new MultiActionController()));
+        mapping.setUrlMap(ImmutableMap.<String,Object>of("/management/url1", new MultiActionController()));
         mapping.initApplicationContext();
 
 		ManagementUrlDiscoveryService service = new ManagementUrlDiscoveryService();
@@ -42,9 +48,8 @@ public class ManagementUrlDiscoveryServiceTest {
 	@Test
     @SuppressWarnings({"UnusedDeclaration"})
 	public void shouldReturnPublicAndProtectedMethodsFromMultiActionController() {
-        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-        mapping.setUrlMap(ImmutableMap.of("/management/url1/**", new MultiActionController() {
-            public ModelAndView publicmethod(HttpServletRequest request, HttpServletResponse response) {
+        mapping.setUrlMap(ImmutableMap.<String,Object>of("/management/url1/**", new MultiActionController() {
+			public ModelAndView publicmethod(HttpServletRequest request, HttpServletResponse response) {
 				return null;
 			}
 
@@ -66,9 +71,7 @@ public class ManagementUrlDiscoveryServiceTest {
 
 	@Test
 	public void shouldReturnUrlsFromFormControllers() throws Exception {
-        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-
-		mapping.setUrlMap(ImmutableMap.of("/management/url1/**", new SimpleFormController() {
+		mapping.setUrlMap(ImmutableMap.<String,Object>of("/management/url1/**", new SimpleFormController() {
 			@SuppressWarnings("unused")
 			public ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response) {
 				return null;
@@ -86,8 +89,6 @@ public class ManagementUrlDiscoveryServiceTest {
 
 	@Test
 	public void shouldReturnUrlsThatAreCustomMappedFromMultiActionController() {
-        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-
 		PropertiesMethodNameResolver resolver = new PropertiesMethodNameResolver();
 
 		Properties mappings = new Properties();
@@ -96,7 +97,7 @@ public class ManagementUrlDiscoveryServiceTest {
 
 		MultiActionController controller = new MultiActionController();
 		controller.setMethodNameResolver(resolver);
-		mapping.setUrlMap(ImmutableMap.of("/management/url1/**", controller));
+		mapping.setUrlMap(ImmutableMap.<String,Object>of("/management/url1/**", controller));
         mapping.initApplicationContext();
 
 		ManagementUrlDiscoveryService service = new ManagementUrlDiscoveryService();
@@ -108,9 +109,7 @@ public class ManagementUrlDiscoveryServiceTest {
 
     @Test
     public void shouldJustPickUpThePathSpecifiedFromAnnotatedControllers() {
-        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-
-		mapping.setUrlMap(ImmutableMap.of("/management/url1/**", new Object() {
+		mapping.setUrlMap(ImmutableMap.<String,Object>of("/management/url1/**", new Object() {
 			@RequestMapping("/mangement/url1/something")
 			public void makeItSo() {
 			}
@@ -127,8 +126,7 @@ public class ManagementUrlDiscoveryServiceTest {
 
     @Test
     public void shouldNeverIncludeDuplicates() {
-        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-        mapping.setUrlMap(ImmutableMap.of(
+        mapping.setUrlMap(ImmutableMap.<String,Object>of(
                 "/management/url1", new MultiActionController()
         ));
         mapping.initApplicationContext();
@@ -139,9 +137,7 @@ public class ManagementUrlDiscoveryServiceTest {
         service.setHandlerMappings(Arrays.<AbstractUrlHandlerMapping>asList(mapping, mapping));
 
         assertThat(service.getManagementUrls(), collectionOfSize(1));
-
     }
-
 
 }
 

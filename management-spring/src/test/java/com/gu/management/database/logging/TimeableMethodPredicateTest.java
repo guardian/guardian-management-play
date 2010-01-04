@@ -1,25 +1,18 @@
 package com.gu.management.database.logging;
 
-import org.hamcrest.Matchers;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
+import java.lang.reflect.Method;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.internal.MockHandler;
 import org.mockito.internal.util.MockUtil;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.lang.reflect.Method;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TimeableMethodPredicateTest {

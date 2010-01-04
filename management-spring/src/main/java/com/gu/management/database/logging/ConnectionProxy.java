@@ -1,14 +1,13 @@
 package com.gu.management.database.logging;
 
-import com.google.common.collect.Sets;
-import net.sf.cglib.proxy.InvocationHandler;
+import static com.google.common.collect.Sets.newHashSet;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
+import net.sf.cglib.proxy.InvocationHandler;
 
 
 class ConnectionProxy implements InvocationHandler {
