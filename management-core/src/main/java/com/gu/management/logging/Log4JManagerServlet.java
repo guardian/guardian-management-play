@@ -21,7 +21,12 @@ public class Log4JManagerServlet extends HttpServlet {
             "\t\t<input type=\"submit\" value=\"update\" />\n" +
             "\n" +
             "<table>\n" +
-            "\t<tr><th>Logger</th><th>Level</th><th>Effective Level</th></tr><th></th>";
+            "\t<tr>" +
+                "<th>Level</th>" +
+                "<th>Effective Level</th>" +
+                "<th></th>" +
+                "<th>Logger</th>" +
+            "</tr>" ;
 
      private static final String MANAGEMENT_PAGE_FOOT = "</table>\n" +
              "\t\t<input type=\"submit\" value=\"update\" />\n" +
@@ -30,10 +35,11 @@ public class Log4JManagerServlet extends HttpServlet {
              "</html>";
 
     private static final String LOGGER_TABLE_ROW = "<tr>" +
-            "<td>%1$s</td>" +
             "<td><select name=\"%1$s\">%2$s</select></td>" +
             "<td>%3$s</td>" +
-            "<td><input type=\"submit\" value=\"update\" /></td></tr>";
+            "<td><input type=\"submit\" value=\"update\" /></td>" +
+            "<td>%1$s</td>" +
+            "</tr>";
 
     private static final Level[] levels = new Level[]{Level.OFF, Level.FATAL, Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE, Level.ALL};
 
