@@ -54,18 +54,35 @@ public class LoggingStopWatch {
 	}
 
 	public <T> T executeAndLog(Callable<T> callable) throws Exception {
-		start();
-
-		try {
-			T value = callable.call();
-			stop();
-			return value;
+        try {
+            return executeAndTime(callable);
 		} catch (Exception e) {
-			stopWatch.stop();
-			log.warn(activity + " caused exception after " + stopWatch.getTime() + " ms", e);
+            handleCallableException(e);
 			throw e;
 		}
 	}
+
+    public <T> T executeAndLogUnchecked(Callable<T> callable) {
+		try {
+            return executeAndTime(callable);
+		} catch (Exception e) {
+            handleCallableException(e);
+			throw new RuntimeException(e);
+		}
+	}
+
+    private <T> void handleCallableException(Exception e) {
+        stopWatch.stop();
+        log.warn(activity + " caused exception after " + stopWatch.getTime() + " ms", e);
+    }
+
+    private <T> T executeAndTime(Callable<T> callable) throws Exception {
+        start();
+        T value = callable.call();
+        stop();
+        return value;
+    }
+
 
 	public  <T> T executeAndLogWithMetricUpdate(Callable<T> callable)  throws Exception {
 		T result = executeAndLog(callable);
