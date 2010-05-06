@@ -1,15 +1,6 @@
 package com.gu.management.spring;
 
-import static com.gu.testsupport.matchers.Matchers.collectionContainingOnly;
-import static com.gu.testsupport.matchers.Matchers.collectionOfSize;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.Arrays;
-import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
@@ -21,7 +12,14 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.google.common.collect.ImmutableMap;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.Properties;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
 public class ManagementUrlDiscoveryServiceTest {
 
@@ -42,7 +40,8 @@ public class ManagementUrlDiscoveryServiceTest {
 		ManagementUrlDiscoveryService service = new ManagementUrlDiscoveryService();
 		service.setHandlerMappings(Arrays.<AbstractUrlHandlerMapping>asList(mapping));
 
-        assertThat(service.getManagementUrls(), collectionContainingOnly("/management/url1"));
+        assertThat(service.getManagementUrls(), hasItems("/management/url1"));
+        assertThat(service.getManagementUrls().size(), is(1));
 	}
 
 	@Test
@@ -64,7 +63,8 @@ public class ManagementUrlDiscoveryServiceTest {
 		service.setHandlerMappings(Arrays.<AbstractUrlHandlerMapping>asList(mapping));
 
         assertThat(service.getManagementUrls(),
-                collectionContainingOnly("/management/url1/publicmethod", "/management/url1/protectedmethod"));
+                hasItems("/management/url1/publicmethod", "/management/url1/protectedmethod"));
+		assertThat(service.getManagementUrls().size(), is(2));
 
 	}
 
@@ -83,7 +83,8 @@ public class ManagementUrlDiscoveryServiceTest {
 		ManagementUrlDiscoveryService service = new ManagementUrlDiscoveryService();
         service.setHandlerMappings(Arrays.<AbstractUrlHandlerMapping>asList(mapping));
 
-        assertThat(service.getManagementUrls(), collectionContainingOnly("/management/url1"));
+        assertThat(service.getManagementUrls(), hasItems("/management/url1"));
+		assertThat(service.getManagementUrls().size(), is(1));
 	}
 
 
@@ -103,8 +104,8 @@ public class ManagementUrlDiscoveryServiceTest {
 		ManagementUrlDiscoveryService service = new ManagementUrlDiscoveryService();
         service.setHandlerMappings(Arrays.<AbstractUrlHandlerMapping>asList(mapping));
 
-        assertThat(service.getManagementUrls(), collectionContainingOnly("/management/cache/clear"));
-
+        assertThat(service.getManagementUrls(), hasItems("/management/cache/clear"));
+		assertThat(service.getManagementUrls().size(), is(1));
 	}
 
     @Test
@@ -120,8 +121,8 @@ public class ManagementUrlDiscoveryServiceTest {
         ManagementUrlDiscoveryService service = new ManagementUrlDiscoveryService();
         service.setHandlerMappings(Arrays.<AbstractUrlHandlerMapping>asList(mapping));
 
-        assertThat(service.getManagementUrls(), collectionContainingOnly("/mangement/url1/something"));
-
+        assertThat(service.getManagementUrls(), hasItems("/mangement/url1/something"));
+		assertThat(service.getManagementUrls().size(), is(1));
     }
 
     @Test
@@ -136,7 +137,7 @@ public class ManagementUrlDiscoveryServiceTest {
         // NOTE: include mapping twice in this list this time
         service.setHandlerMappings(Arrays.<AbstractUrlHandlerMapping>asList(mapping, mapping));
 
-        assertThat(service.getManagementUrls(), collectionOfSize(1));
+        assertThat(service.getManagementUrls().size(), is(1));
     }
 
 }
