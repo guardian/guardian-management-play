@@ -36,7 +36,7 @@
     <orderEntry type="library" exported="" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.transaction:jta:1.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.slf4j:slf4j-api:1.5.8" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.google.collections:google-collections:1.0-rc2" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.google.collections:google-collections:1.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-httpclient:commons-httpclient:3.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.7" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-codec:commons-codec:1.2" level="project" />
