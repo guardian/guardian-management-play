@@ -27,7 +27,7 @@ import java.util.Collection;
 @Singleton
 public class GuiceStatusServlet extends StatusServlet{
     @Inject
-    public GuiceStatusServlet(@Named("StatusServletWriters")Collection<StatusWriter> statusWriters) {
+    public GuiceStatusServlet(Collection<StatusWriter> statusWriters) {
         super(statusWriters);
     }
 }
