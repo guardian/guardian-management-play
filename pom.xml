@@ -95,7 +95,7 @@
 
     <scm>
         <connection>scm:git:http://github.com/guardian/guardian-management.git</connection>
-        <developerConnection>scm:git:git://git@github.com/guardian/guardian-management.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@github.com/guardian/guardian-management.git</developerConnection>
 	    <url>http://github.com/guardian/guardian-management</url>
     </scm>
 
