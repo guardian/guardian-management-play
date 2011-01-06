@@ -31,7 +31,7 @@ public class Manifest {
 	private String manifestString;
 	private String manifestFilePath = "META-INF/MANIFEST.MF";
 	private ApplicationFileProvider fileProvider;
-    private Map<String, String> values;
+    private Map<String, String> values = new HashMap<String, String>();;
 
     public Manifest(ApplicationFileProvider fileProvider) {
         this.fileProvider=fileProvider;
