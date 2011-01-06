@@ -96,13 +96,25 @@ public class Manifest {
 				parseRevisionNumber(line);
 				LOGGER.info("Manifest Revision: "+revisionNumber);
 			}
-            String key = line.split(":")[0].trim();
-            String value = line.split(":")[1].trim();
-            values.put(key, value);
+            addKeyValue(line);
 		}
 	}
 
+    private void addKeyValue(String line){
+        String[] spliters = line.split(":");
+        if (spliters.length == 2){
+            String key = spliters[0].trim();
+            String value = spliters[1].trim();
+            values.put(key, value);
+        }
+    }
+
     public String getValueFor(String key) {
         return values.get(key);
+    }
+
+    public String getValueFor(String key, String defaultValue){
+        String value = getValueFor(key);
+        return value != null ? value : defaultValue; 
     }
 }

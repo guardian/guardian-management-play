@@ -108,6 +108,30 @@ public class ManifestTest {
         assertEquals("trunk", productionManifest.getValueFor("Branch"));
         assertEquals("1.5.0_06-b05 (Sun Microsystems Inc.)", productionManifest.getValueFor("Created-By"));
         assertEquals(null, productionManifest.getValueFor("Does not exist"));
+        assertEquals("", productionManifest.getValueFor("Does not exist", ""));
+        assertEquals("somedefault", productionManifest.getValueFor("Does not exist", "somedefault"));
+    }
+
+    @Test
+    public void shouldRetrieveManifestValueWithCrappyManifest(){
+         StubApplicationFileProvider stubApplicationFileProvider = new StubApplicationFileProvider(".");
+        stubApplicationFileProvider.setReturnedFileContents(Arrays.asList("Manifest-Version: 1.0",
+                "Ant-Version: Apache Ant 1.7.0",
+                "Created-By: 1.5.0_06-b05 (Sun Microsystems Inc.)",
+                "Built-By: dtwswells",
+                "Title: guardian.co.uk R2 Web Application",
+                "Date: March 2 2007",
+                "Branch: trunk",
+                "Crappy",
+                "Rubbish:",
+                "Revision: 1234"));
+        productionManifest = new Manifest(stubApplicationFileProvider);
+        productionManifest.setManifestFilePath("src/test/com/gu/r2/common/management/MANIFEST.MF");
+
+        assertEquals("somedefault", productionManifest.getValueFor("Crappy", "somedefault"));
+        assertEquals("somedefault", productionManifest.getValueFor("DoestExist", "somedefault"));
+        assertEquals("somedefault", productionManifest.getValueFor("Rubbish", "somedefault"));
+        assertEquals(null, productionManifest.getValueFor("DoestExist"));
     }
 
 
