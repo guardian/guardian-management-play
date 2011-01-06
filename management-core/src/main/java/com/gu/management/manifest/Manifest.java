@@ -18,7 +18,9 @@ package com.gu.management.manifest;
 
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Manifest {
 
@@ -29,6 +31,7 @@ public class Manifest {
 	private String manifestString;
 	private String manifestFilePath = "META-INF/MANIFEST.MF";
 	private ApplicationFileProvider fileProvider;
+    private Map<String, String> values;
 
     public Manifest(ApplicationFileProvider fileProvider) {
         this.fileProvider=fileProvider;
@@ -72,6 +75,7 @@ public class Manifest {
 
     public void reload() {
 		LOGGER.info("Reloading manifest: "+manifestFilePath);
+        values = new HashMap<String, String>();
 		List<String> file = fileProvider.getFileContents(manifestFilePath);
 		if(file != null) {
 			parseManifest(file);
@@ -92,6 +96,13 @@ public class Manifest {
 				parseRevisionNumber(line);
 				LOGGER.info("Manifest Revision: "+revisionNumber);
 			}
+            String key = line.split(":")[0].trim();
+            String value = line.split(":")[1].trim();
+            values.put(key, value);
 		}
 	}
+
+    public String getValueFor(String key) {
+        return values.get(key);
+    }
 }

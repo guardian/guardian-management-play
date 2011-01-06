@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -100,6 +101,13 @@ public class ManifestTest {
         fileProvider.setReturnedFileContents(Arrays.asList("Revision: 890"));
         manifest.reload();
         assertThat(manifest.getRevisionNumber(), equalTo(890L));
+    }
+
+    @Test
+    public void shouldRetrieveManifestValue(){
+        assertEquals("trunk", productionManifest.getValueFor("Branch"));
+        assertEquals("1.5.0_06-b05 (Sun Microsystems Inc.)", productionManifest.getValueFor("Created-By"));
+        assertEquals(null, productionManifest.getValueFor("Does not exist"));
     }
 
 
