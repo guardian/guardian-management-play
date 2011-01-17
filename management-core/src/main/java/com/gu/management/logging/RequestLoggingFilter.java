@@ -18,6 +18,9 @@ package com.gu.management.logging;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
+import java.util.Set;
+
 public class RequestLoggingFilter extends ConfigurableLoggingFilter {
 
     private static final Logger logger = Logger.getLogger(RequestLoggingFilter.class);
@@ -30,5 +33,10 @@ public class RequestLoggingFilter extends ConfigurableLoggingFilter {
     @Override
     protected boolean shouldLogParametersOnNonGetRequests() {
         return false;
+    }
+
+    @Override
+    protected Set<String> parametersToSuppressInLogs() {
+        return Collections.emptySet();
     }
 }

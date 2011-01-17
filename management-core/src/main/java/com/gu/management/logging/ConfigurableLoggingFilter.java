@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Set;
 
 abstract class ConfigurableLoggingFilter extends AbstractFilter {
 
@@ -26,6 +27,8 @@ abstract class ConfigurableLoggingFilter extends AbstractFilter {
     protected abstract Logger getLogger();
 
     protected abstract boolean shouldLogParametersOnNonGetRequests();
+
+    protected abstract Set<String> parametersToSuppressInLogs();
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
@@ -107,11 +110,18 @@ abstract class ConfigurableLoggingFilter extends AbstractFilter {
                 String paramName = params.nextElement();
                 logMessageBuilder.append(paramName);
                 logMessageBuilder.append("=");
-                logMessageBuilder.append(request.getParameter(paramName));
+                logMessageBuilder.append(getOrSuppressParameter(paramName, request));
+
+                if (params.hasMoreElements())
+                    logMessageBuilder.append("&");
             }
         }
 
         return logMessageBuilder.toString();
+    }
+
+    private String getOrSuppressParameter(String paramName, HttpServletRequest request) {
+        return parametersToSuppressInLogs().contains(paramName) ? "*****" : request.getParameter(paramName);
     }
 
     protected class RequestLoggingStopWatch extends LoggingStopWatch {

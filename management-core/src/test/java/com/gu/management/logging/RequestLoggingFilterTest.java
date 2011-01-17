@@ -16,6 +16,7 @@
 
 package com.gu.management.logging;
 
+import com.google.common.collect.ImmutableSet;
 import com.gu.management.timing.TimingMetric;
 import com.gu.management.util.ServerIdentityInformation;
 import org.junit.Before;
@@ -30,6 +31,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.core.Is.is;
@@ -71,9 +73,10 @@ public class RequestLoggingFilterTest {
     public void testLogsGetParameters() throws Exception {
         request.setPathInfo("/foo/bar");
         request.setParameter("foo", "foo");
-        request.setQueryString("foo=foo");
+        request.setParameter("bar", "bar");
+        request.setQueryString("foo=foo&bar=bar");
 
-        assertThat(filter.buildLogMessage(request), is("GET /foo/bar?foo=foo"));
+        assertThat(filter.buildLogMessage(request), is("GET /foo/bar?foo=foo&bar=bar"));
     }
 
     @Test
@@ -99,6 +102,29 @@ public class RequestLoggingFilterTest {
         request.setPathInfo("/foo/bar");
 
         assertThat(filter.buildLogMessage(request), is("POST /foo/bar?foo=foo"));
+    }
+
+    @Test
+    public void testCanConfigureFilterToSuppressCertainParameters() throws Exception {
+        filter = configureFilter(new RequestLoggingFilter() {
+            @Override
+            protected boolean shouldLogParametersOnNonGetRequests() {
+                return true;
+            }
+
+            @Override
+            protected Set<String> parametersToSuppressInLogs() {
+                return ImmutableSet.of("secret", "password");
+            }
+        });
+
+        request.setMethod("POST");
+        request.setPathInfo("/foo/bar");
+        request.setParameter("foo", "foo");
+        request.setParameter("password", "password");
+        request.setParameter("secret", "secret");
+
+        assertThat(filter.buildLogMessage(request), is("POST /foo/bar?foo=foo&password=*****&secret=*****"));
     }
 
     @Test
