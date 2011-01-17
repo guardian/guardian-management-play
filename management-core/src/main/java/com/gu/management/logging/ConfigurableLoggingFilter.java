@@ -47,19 +47,13 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         } catch (Exception e) {
             throw new ServletException(e);
         } finally {
-            if (shouldReturnTimeSpentInMetric(request))
+            if (shouldFullyLogRequest(request))
                 metric.recordTimeSpent(stopWatch.getTime());
         }
     }
 
     private Level getLogLevelFor(HttpServletRequest request) {
-        String fullPath = request.getServletPath() + request.getPathInfo();
-
-        for (String tracePath : pathPrefixesToLogAtTrace())
-            if (fullPath.startsWith(tracePath))
-                return Level.TRACE;
-
-        return Level.INFO;
+        return shouldFullyLogRequest(request) ? Level.INFO : Level.TRACE;
     }
 
     public void setMetric(TimingMetric metric) {
@@ -101,7 +95,7 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         return parametersToSuppressInLogs().contains(paramName) ? "*****" : request.getParameter(paramName);
     }
 
-    private boolean shouldReturnTimeSpentInMetric(HttpServletRequest request) {
+    private boolean shouldFullyLogRequest(HttpServletRequest request) {
         String fullPath = request.getServletPath() + request.getPathInfo();
 
         for (String excludedPath : pathPrefixesToLogAtTrace())
