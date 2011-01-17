@@ -24,68 +24,59 @@ import java.util.concurrent.Callable;
 
 public class LoggingStopWatch {
 
-	protected final Logger log;
-	protected final String activity;
+    protected final Logger log;
+    protected final String activity;
 
-	private final Level level;
-	private final TimingMetric metric;
+    private final Level level;
+    private final TimingMetric metric;
 
-	private final StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
 
-	public LoggingStopWatch(Logger log, String activity) {
-		this(log, activity, Level.INFO, new NullMetric());
-	}
+    public LoggingStopWatch(Logger log, String activity) {
+        this(log, activity, Level.INFO, new NullMetric());
+    }
 
-	public LoggingStopWatch(Logger log, String activity, Level level) {
-		this(log, activity, level, new NullMetric());
-	}
+    public LoggingStopWatch(Logger log, String activity, Level level) {
+        this(log, activity, level, new NullMetric());
+    }
 
-	public LoggingStopWatch(Logger log, String activity, TimingMetric metric) {
-		this(log, activity, Level.INFO, metric);
-	}
+    public LoggingStopWatch(Logger log, String activity, TimingMetric metric) {
+        this(log, activity, Level.INFO, metric);
+    }
 
-	public LoggingStopWatch(Logger log, String activity, Level level, TimingMetric metric) {
-		this.log = log;
-		this.activity = activity;
-		this.level = level;
-		this.metric = metric;
-	}
+    public LoggingStopWatch(Logger log, String activity, Level level, TimingMetric metric) {
+        this.log = log;
+        this.activity = activity;
+        this.level = level;
+        this.metric = metric;
+    }
 
-	public void start() {
-		if (log.isTraceEnabled()) {
-			log.trace(activity);
-		}
-		stopWatch.start();
-	}
+    public void start() {
+        if (log.isTraceEnabled())
+            log.trace(activity);
 
-	public void stop() {
-		stopWatch.stop();
-		if (log.isEnabledFor(level)) {
-			log.log(level, activity + " completed in " + stopWatch.getTime() + " ms");
-		}
-	}
+        stopWatch.start();
+    }
 
-	public long getTime() {
-		return stopWatch.getTime();
-	}
+    public void stop() {
+        stopWatch.stop();
 
-	public <T> T executeAndLog(Callable<T> callable) throws Exception {
+        if (log.isEnabledFor(level))
+            log.log(level, activity + " completed in " + stopWatch.getTime() + " ms");
+    }
+
+    public long getTime() {
+        return stopWatch.getTime();
+    }
+
+    public <T> T executeAndLog(Callable<T> callable) throws Exception {
         try {
             return executeAndTime(callable);
-		} catch (Exception e) {
+        } catch (Exception e) {
             handleCallableException(e);
-			throw e;
-		}
-	}
-
-    public <T> T executeAndLogUnchecked(Callable<T> callable) {
-		try {
-            return executeAndTime(callable);
-		} catch (Exception e) {
-            handleCallableException(e);
-			throw new RuntimeException(e);
-		}
-	}
+            throw e;
+        }
+    }
 
     private <T> void handleCallableException(Exception e) {
         stopWatch.stop();
@@ -100,9 +91,9 @@ public class LoggingStopWatch {
     }
 
 
-	public  <T> T executeAndLogWithMetricUpdate(Callable<T> callable)  throws Exception {
-		T result = executeAndLog(callable);
-		metric.recordTimeSpent(getTime());
-		return result;
-	}
+    public <T> T executeAndLogWithMetricUpdate(Callable<T> callable) throws Exception {
+        T result = executeAndLog(callable);
+        metric.recordTimeSpent(getTime());
+        return result;
+    }
 }

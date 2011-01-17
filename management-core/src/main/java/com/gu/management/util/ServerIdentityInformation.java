@@ -21,34 +21,30 @@ import java.util.Date;
 
 public class ServerIdentityInformation {
 
-	private HostNameProvider hostNameProvider = new HostNameProvider();
-	private String hostName;
+    private HostNameProvider hostNameProvider = new HostNameProvider();
+    private String hostName;
 
-	public String getPublicHostIdentifier() {
-		String returnValue = getHostName();
+    public String getPublicHostIdentifier() {
+        String returnValue = getHostName();
 
-		if (returnValue.length() > 2) {
-			return returnValue.substring(returnValue.length() - 2);
-		}
+        if (returnValue.length() > 2)
+            return returnValue.substring(returnValue.length() - 2);
 
-		return returnValue;
-	}
+        return returnValue;
+    }
 
-	private String getHostName() {
-		if (hostName == null) {
-			hostName = hostNameProvider.getHostName();
-		}
+    private String getHostName() {
+        if (hostName == null)
+            hostName = hostNameProvider.getHostName();
 
-		return hostName;
+        return hostName;
+    }
 
-	}
+    public void setHostNameProvider(HostNameProvider hostNameProvider) {
+        this.hostNameProvider = hostNameProvider;
+    }
 
-	public void setHostNameProvider(HostNameProvider hostNameProvider) {
-		this.hostNameProvider = hostNameProvider;
-	}
-
-	public String getAsHtmlComment() {
-        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS").format(new Date());
-		return String.format("<!--[if !IE]> GUERR (%s) %s <![endif]-->", getPublicHostIdentifier(), date);
-	}
+    public String getAsHtmlComment() {
+        return String.format("<!--[if !IE]> GUERR (%s) %s <![endif]-->", getPublicHostIdentifier(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS").format(new Date()));
+    }
 }
