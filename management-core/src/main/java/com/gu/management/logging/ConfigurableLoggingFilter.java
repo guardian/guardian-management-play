@@ -4,6 +4,7 @@ import com.gu.management.timing.LoggingStopWatch;
 import com.gu.management.timing.NullMetric;
 import com.gu.management.timing.TimingMetric;
 import com.gu.management.util.VoidCallable;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import javax.servlet.FilterChain;
@@ -26,14 +27,15 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
 
     protected abstract Set<String> parametersToSuppressInLogs();
 
+    protected abstract Set<String> pathPrefixesToLogAtTrace();
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
         super.doFilter(servletRequest, servletResponse, filterChain);
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
         final HttpServletResponse response = (HttpServletResponse) servletResponse;
-
         String logMessage = buildLogMessage(request);
-        LoggingStopWatch stopWatch = getTimerInstance(getLogger(), logMessage);
+        LoggingStopWatch stopWatch = new RequestLoggingStopWatch(getLogger(), logMessage, getLogLevelFor(request));
 
         try {
             stopWatch.executeAndLog(new VoidCallable() {
@@ -45,19 +47,23 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         } catch (Exception e) {
             throw new ServletException(e);
         } finally {
-            String fullPath = request.getServletPath() + request.getPathInfo();
-
-            if (!fullPath.startsWith("/management") && !fullPath.startsWith("/status"))
+            if (shouldReturnTimeSpentInMetric(request))
                 metric.recordTimeSpent(stopWatch.getTime());
         }
     }
 
-    public void setMetric(TimingMetric metric) {
-        this.metric = metric;
+    private Level getLogLevelFor(HttpServletRequest request) {
+        String fullPath = request.getServletPath() + request.getPathInfo();
+
+        for (String tracePath : pathPrefixesToLogAtTrace())
+            if (fullPath.startsWith(tracePath))
+                return Level.TRACE;
+
+        return Level.INFO;
     }
 
-    protected LoggingStopWatch getTimerInstance(Logger logger, String logMessage) {
-        return new RequestLoggingStopWatch(logger, logMessage);
+    public void setMetric(TimingMetric metric) {
+        this.metric = metric;
     }
 
     protected String buildLogMessage(HttpServletRequest request) {
@@ -95,9 +101,19 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         return parametersToSuppressInLogs().contains(paramName) ? "*****" : request.getParameter(paramName);
     }
 
+    private boolean shouldReturnTimeSpentInMetric(HttpServletRequest request) {
+        String fullPath = request.getServletPath() + request.getPathInfo();
+
+        for (String excludedPath : pathPrefixesToLogAtTrace())
+            if (fullPath.startsWith(excludedPath))
+                return false;
+
+        return true;
+    }
+
     private class RequestLoggingStopWatch extends LoggingStopWatch {
-        private RequestLoggingStopWatch(Logger logger, String activity) {
-            super(logger, activity);
+        private RequestLoggingStopWatch(Logger logger, String activity, Level logLevel) {
+            super(logger, activity, logLevel);
         }
 
         @Override

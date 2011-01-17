@@ -16,12 +16,15 @@
 
 package com.gu.management.logging;
 
+import com.google.common.collect.ImmutableSet;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Set;
 
 public class RequestLoggingFilter extends ConfigurableLoggingFilter {
+
+    private final Set<String> pathPrefixesToExcludeFromLogging = ImmutableSet.of("/management", "/status");
 
     private static final Logger logger = Logger.getLogger(RequestLoggingFilter.class);
 
@@ -38,5 +41,10 @@ public class RequestLoggingFilter extends ConfigurableLoggingFilter {
     @Override
     protected Set<String> parametersToSuppressInLogs() {
         return Collections.emptySet();
+    }
+
+    @Override
+    protected Set<String> pathPrefixesToLogAtTrace() {
+        return pathPrefixesToExcludeFromLogging;
     }
 }
