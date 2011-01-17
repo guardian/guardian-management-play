@@ -131,7 +131,7 @@ abstract class ConfigurableLoggingFilter extends AbstractFilter {
 
         @Override
         public void start() {
-            log.info(activity);
+            log.debug(activity);
             super.start();
         }
     }
