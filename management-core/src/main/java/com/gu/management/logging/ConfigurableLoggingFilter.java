@@ -34,21 +34,25 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         super.doFilter(servletRequest, servletResponse, filterChain);
         final HttpServletRequest request = (HttpServletRequest) servletRequest;
         final HttpServletResponse response = (HttpServletResponse) servletResponse;
-        String logMessage = buildLogMessage(request);
-        LoggingStopWatch stopWatch = new RequestLoggingStopWatch(getLogger(), logMessage, getLogLevelFor(request));
+        Level logLevel = getLogLevelFor(request);
 
-        try {
-            stopWatch.executeAndLog(new VoidCallable() {
-                @Override
-                public void voidCall() throws Exception {
-                    filterChain.doFilter(request, response);
-                }
-            });
-        } catch (Exception e) {
-            throw new ServletException(e);
-        } finally {
-            if (shouldFullyLogRequest(request))
-                metric.recordTimeSpent(stopWatch.getTime());
+        if (getLogger().isEnabledFor(logLevel)) {
+            String logMessage = buildLogMessage(request);
+            LoggingStopWatch stopWatch = new RequestLoggingStopWatch(getLogger(), logMessage, logLevel);
+
+            try {
+                stopWatch.executeAndLog(new VoidCallable() {
+                    @Override
+                    public void voidCall() throws Exception {
+                        filterChain.doFilter(request, response);
+                    }
+                });
+            } catch (Exception e) {
+                throw new ServletException(e);
+            } finally {
+                if (shouldFullyLogRequest(request))
+                    metric.recordTimeSpent(stopWatch.getTime());
+            }
         }
     }
 
