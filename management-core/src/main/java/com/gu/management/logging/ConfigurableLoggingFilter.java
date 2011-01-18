@@ -36,32 +36,31 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         final HttpServletResponse response = (HttpServletResponse) servletResponse;
         Level logLevel = getLogLevelFor(request);
 
-        if (getLogger().isEnabledFor(logLevel)) {
-            String logMessage = buildLogMessage(request);
-            LoggingStopWatch stopWatch = new RequestLoggingStopWatch(getLogger(), logMessage, logLevel);
-
-            try {
-                stopWatch.executeAndLog(new VoidCallable() {
-                    @Override
-                    public void voidCall() throws Exception {
-                        filterChain.doFilter(request, response);
-                    }
-                });
-            } catch (Exception e) {
-                throw new ServletException(e);
-            } finally {
-                if (shouldFullyLogRequest(request))
-                    metric.recordTimeSpent(stopWatch.getTime());
-            }
-        }
-    }
-
-    private Level getLogLevelFor(HttpServletRequest request) {
-        return shouldFullyLogRequest(request) ? Level.INFO : Level.TRACE;
+        if (getLogger().isEnabledFor(logLevel))
+            logRequest(filterChain, request, response, logLevel);
     }
 
     public void setMetric(TimingMetric metric) {
         this.metric = metric;
+    }
+
+    protected void logRequest(final FilterChain filterChain, final HttpServletRequest request, final HttpServletResponse response, Level logLevel) throws ServletException {
+        String logMessage = buildLogMessage(request);
+        LoggingStopWatch stopWatch = new RequestLoggingStopWatch(getLogger(), logMessage, logLevel);
+
+        try {
+            stopWatch.executeAndLog(new VoidCallable() {
+                @Override
+                public void voidCall() throws Exception {
+                    filterChain.doFilter(request, response);
+                }
+            });
+        } catch (Exception e) {
+            throw new ServletException(e);
+        } finally {
+            if (shouldFullyLogRequest(request))
+                metric.recordTimeSpent(stopWatch.getTime());
+        }
     }
 
     protected String buildLogMessage(HttpServletRequest request) {
@@ -93,6 +92,10 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         }
 
         return logMessageBuilder.toString();
+    }
+
+    private Level getLogLevelFor(HttpServletRequest request) {
+        return shouldFullyLogRequest(request) ? Level.INFO : Level.TRACE;
     }
 
     private String getOrSuppressParameter(String paramName, HttpServletRequest request) {
