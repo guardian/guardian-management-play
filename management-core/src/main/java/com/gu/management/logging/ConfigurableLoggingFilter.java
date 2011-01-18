@@ -126,7 +126,7 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         if ("POST".equals(request.getMethod()) && paramValue != null && paramValue.length() > maxSizeForPostParameters)
             return paramValue.substring(0, maxSizeForPostParameters) + "...";
 
-        return request.getParameter(paramValue);
+        return request.getParameter(paramName);
     }
 
     private class RequestLoggingStopWatch extends LoggingStopWatch {

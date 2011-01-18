@@ -95,6 +95,7 @@ public class RequestLoggingFilterTest {
     public void testCanConfigureMaxSizeForPostParameters() throws Exception {
         request.setPathInfo("/foo/bar");
         request.setParameter("foo", "abcdefghijklmnopqrstuvwxyz");
+        request.setParameter("bar", "1234");
         request.setMethod("POST");
 
         filter = configureFilter(new RequestLoggingFilter() {
@@ -109,7 +110,7 @@ public class RequestLoggingFilterTest {
             }
         });
 
-        assertThat(filter.buildLogMessage(request), is("POST /foo/bar?foo=abcdefghij..."));
+        assertThat(filter.buildLogMessage(request), is("POST /foo/bar?foo=abcdefghij...&bar=1234"));
     }
 
     @Test
