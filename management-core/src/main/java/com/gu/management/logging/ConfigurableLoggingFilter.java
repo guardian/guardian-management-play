@@ -25,7 +25,15 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
     private final Set<String> pathPrefixesToLogAtTrace = pathPrefixesToLogAtTrace();
     private final boolean shouldLogParametersOnNonGetRequests = shouldLogParametersOnNonGetRequests();
 
-    protected TimingMetric metric = new NullMetric();
+    protected TimingMetric metric;
+
+    protected ConfigurableLoggingFilter(TimingMetric timingMetric) {
+        this.metric = timingMetric;
+    }
+
+    protected ConfigurableLoggingFilter() {
+        this(new NullMetric());
+    }
 
     protected abstract Logger getLogger();
 
@@ -43,16 +51,8 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
         super.doFilter(servletRequest, servletResponse, filterChain);
         Level logLevel = getLogLevelFor((HttpServletRequest) servletRequest);
-
-        if (getLogger().isEnabledFor(logLevel))
-            logRequest(filterChain, (HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, logLevel);
-    }
-
-    public void setMetric(TimingMetric metric) {
-        this.metric = metric;
-    }
-
-    protected void logRequest(final FilterChain filterChain, final HttpServletRequest request, final HttpServletResponse response, Level logLevel) throws ServletException {
+        final HttpServletRequest request = (HttpServletRequest) servletRequest;
+        final HttpServletResponse response = (HttpServletResponse) servletResponse;
         String logMessage = buildLogMessage(request);
         LoggingStopWatch stopWatch = new RequestLoggingStopWatch(getLogger(), logMessage, logLevel);
 
@@ -69,6 +69,10 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
             if (shouldFullyLogRequest(request))
                 metric.recordTimeSpent(stopWatch.getTime());
         }
+    }
+
+    public void setMetric(TimingMetric metric) {
+        this.metric = metric;
     }
 
     protected String buildLogMessage(HttpServletRequest request) {

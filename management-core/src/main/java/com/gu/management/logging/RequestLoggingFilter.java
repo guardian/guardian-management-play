@@ -17,14 +17,23 @@
 package com.gu.management.logging;
 
 import com.google.common.collect.ImmutableSet;
+import com.gu.management.timing.TimingMetric;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Set;
 
 public class RequestLoggingFilter extends ConfigurableLoggingFilter {
-
     private static final Logger logger = Logger.getLogger(RequestLoggingFilter.class);
+
+    @SuppressWarnings("unused")
+    public RequestLoggingFilter(TimingMetric timingMetric) {
+        super(timingMetric);
+    }
+
+    public RequestLoggingFilter() {
+        super();
+    }
 
     @Override
     protected Logger getLogger() {
