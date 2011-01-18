@@ -11,6 +11,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -18,6 +19,11 @@ import java.util.Enumeration;
 import java.util.Set;
 
 abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
+
+    private final int maxSizeForPostParameters = maximumSizeForPostParameters();
+    private final Set<String> parametersToSuppressInLogs = parametersToSuppressInLogs();
+    private final Set<String> pathPrefixesToLogAtTrace = pathPrefixesToLogAtTrace();
+    private final boolean shouldLogParametersOnNonGetRequests = shouldLogParametersOnNonGetRequests();
 
     protected TimingMetric metric = new NullMetric();
 
@@ -29,15 +35,17 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
 
     protected abstract Set<String> pathPrefixesToLogAtTrace();
 
+    protected int maximumSizeForPostParameters() {
+        return 32;
+    }
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
         super.doFilter(servletRequest, servletResponse, filterChain);
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
-        final HttpServletResponse response = (HttpServletResponse) servletResponse;
-        Level logLevel = getLogLevelFor(request);
+        Level logLevel = getLogLevelFor((HttpServletRequest) servletRequest);
 
         if (getLogger().isEnabledFor(logLevel))
-            logRequest(filterChain, request, response, logLevel);
+            logRequest(filterChain, (HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, logLevel);
     }
 
     public void setMetric(TimingMetric metric) {
@@ -74,7 +82,7 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
 
         logMessageBuilder.append(pathInfo);
 
-        if ("GET".equals(request.getMethod()) || shouldLogParametersOnNonGetRequests()) {
+        if ("GET".equals(request.getMethod()) || shouldLogParametersOnNonGetRequests) {
             @SuppressWarnings("unchecked") Enumeration<String> params = request.getParameterNames();
 
             if (params.hasMoreElements())
@@ -84,7 +92,7 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
                 String paramName = params.nextElement();
                 logMessageBuilder.append(paramName);
                 logMessageBuilder.append("=");
-                logMessageBuilder.append(getOrSuppressParameter(paramName, request));
+                logMessageBuilder.append(getRequestParameterValue(paramName, request));
 
                 if (params.hasMoreElements())
                     logMessageBuilder.append("&");
@@ -94,22 +102,31 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         return logMessageBuilder.toString();
     }
 
-    private Level getLogLevelFor(HttpServletRequest request) {
+    protected Level getLogLevelFor(HttpServletRequest request) {
         return shouldFullyLogRequest(request) ? Level.INFO : Level.TRACE;
     }
 
-    private String getOrSuppressParameter(String paramName, HttpServletRequest request) {
-        return parametersToSuppressInLogs().contains(paramName) ? "*****" : request.getParameter(paramName);
+    protected String getRequestParameterValue(String paramName, HttpServletRequest request) {
+        return parametersToSuppressInLogs.contains(paramName) ? "*****" : getMaxLengthParamFromRequest(request, paramName);
     }
 
-    private boolean shouldFullyLogRequest(HttpServletRequest request) {
+    protected boolean shouldFullyLogRequest(HttpServletRequest request) {
         String fullPath = request.getServletPath() + request.getPathInfo();
 
-        for (String excludedPath : pathPrefixesToLogAtTrace())
+        for (String excludedPath : pathPrefixesToLogAtTrace)
             if (fullPath.startsWith(excludedPath))
                 return false;
 
         return true;
+    }
+
+    private String getMaxLengthParamFromRequest(HttpServletRequest request, String paramName) {
+        String paramValue = request.getParameter(paramName);
+
+        if ("POST".equals(request.getMethod()) && paramValue != null && paramValue.length() > maxSizeForPostParameters)
+            return paramValue.substring(0, maxSizeForPostParameters) + "...";
+
+        return request.getParameter(paramValue);
     }
 
     private class RequestLoggingStopWatch extends LoggingStopWatch {

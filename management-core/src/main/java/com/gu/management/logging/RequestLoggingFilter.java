@@ -24,8 +24,6 @@ import java.util.Set;
 
 public class RequestLoggingFilter extends ConfigurableLoggingFilter {
 
-    private final Set<String> pathPrefixesToExcludeFromLogging = ImmutableSet.of("/management", "/status");
-
     private static final Logger logger = Logger.getLogger(RequestLoggingFilter.class);
 
     @Override
@@ -45,6 +43,6 @@ public class RequestLoggingFilter extends ConfigurableLoggingFilter {
 
     @Override
     protected Set<String> pathPrefixesToLogAtTrace() {
-        return pathPrefixesToExcludeFromLogging;
+        return ImmutableSet.of("/management", "/status");
     }
 }

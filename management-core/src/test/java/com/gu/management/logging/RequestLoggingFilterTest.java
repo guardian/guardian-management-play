@@ -45,9 +45,12 @@ public class RequestLoggingFilterTest {
 
     private static final String GU_APP_SERVER_INFO_HEADER = "X-GU-jas";
 
-    @Mock private TimingMetric metric;
-    @Mock private FilterChain filterChain;
-    @Mock private ServerIdentityInformation serverIdentityInformation;
+    @Mock
+    private TimingMetric metric;
+    @Mock
+    private FilterChain filterChain;
+    @Mock
+    private ServerIdentityInformation serverIdentityInformation;
 
     private MockHttpServletResponse response;
     private MockHttpServletRequest request;
@@ -86,6 +89,27 @@ public class RequestLoggingFilterTest {
         request.setMethod("POST");
 
         assertThat(filter.buildLogMessage(request), is("POST /foo/bar"));
+    }
+
+    @Test
+    public void testCanConfigureMaxSizeForPostParameters() throws Exception {
+        request.setPathInfo("/foo/bar");
+        request.setParameter("foo", "abcdefghijklmnopqrstuvwxyz");
+        request.setMethod("POST");
+
+        filter = configureFilter(new RequestLoggingFilter() {
+            @Override
+            protected int maximumSizeForPostParameters() {
+                return 10;
+            }
+
+            @Override
+            protected boolean shouldLogParametersOnNonGetRequests() {
+                return true;
+            }
+        });
+
+        assertThat(filter.buildLogMessage(request), is("POST /foo/bar?foo=abcdefghij..."));
     }
 
     @Test
