@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.gu</groupId>
         <artifactId>management</artifactId>
-        <version>3.0.2-SNAPSHOT</version>
+        <version>3.0.2</version>
     </parent>
 
     <name>Guardian Management helpers :: core</name>
