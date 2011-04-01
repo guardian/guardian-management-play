@@ -36,6 +36,7 @@
         <module>management-core</module>
         <module>management-spring</module>
         <module>management-guice</module>
+        <module>management-scalatra</module>
     </modules>
 
     <dependencies>

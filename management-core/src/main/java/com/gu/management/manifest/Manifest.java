@@ -82,7 +82,7 @@ public class Manifest {
 		} else {
 			manifestString = String.format("Manifest file not found: '%s", fileProvider.getAbsolutePath(manifestFilePath)) + "'";
 			revisionNumber = System.currentTimeMillis();
-			LOGGER.debug("Manfest not found generating random revision number : "+revisionNumber);
+			LOGGER.debug("Manifest not found generating random revision number : "+revisionNumber);
 		}
 	}
 
