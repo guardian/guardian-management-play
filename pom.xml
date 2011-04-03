@@ -20,7 +20,7 @@
 
     <groupId>com.gu</groupId>
     <artifactId>management</artifactId>
-    <version>3.0.4</version>
+    <version>3.0.5-SNAPSHOT</version>
 
     <name>Guardian Management helpers</name>
 

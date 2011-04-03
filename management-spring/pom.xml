@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.gu</groupId>
         <artifactId>management</artifactId>
-        <version>3.0.4</version>
+        <version>3.0.5-SNAPSHOT</version>
     </parent>
 
     <name>Guardian Management helpers :: spring</name>
