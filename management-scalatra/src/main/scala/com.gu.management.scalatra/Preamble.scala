@@ -3,13 +3,19 @@ package com.gu.management.scalatra
 import com.gu.management.manifest.{ApplicationFileProvider, Manifest => WebAppManifest}
 import com.gu.management.switching.SwitchableState
 import javax.servlet.ServletContext
+import com.gu.management.timing.TimestampMetric
+import java.sql.{Date => SQLDate}
 
 object Preamble {
-  implicit def webappManifest2getReloadedManifestInformation(manifest: WebAppManifest) = new {
+  implicit def webappManifest2GetReloadedManifestInformation(manifest: WebAppManifest) = new {
     def getReloadedManifestInformation = {
       manifest.reload
       manifest.getManifestInformation
     }
+  }
+
+  implicit def timestampMetric2RecordTimestamp(metric: TimestampMetric) = new {
+    def recordTimestamp() = metric setTimeStamp (new SQLDate(System.currentTimeMillis))
   }
 }
 
