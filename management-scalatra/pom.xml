@@ -48,12 +48,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--  <groupId>org.scalatra</groupId>-->
-        <!--  <artifactId>scalatra-scalate_2.8.1</artifactId>-->
-        <!--  <version>${scalatra.version}</version>-->
-        <!--  <scope>compile</scope>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.scalatra</groupId>
             <artifactId>scalatra_2.8.1</artifactId>
@@ -65,6 +59,13 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>0.9.27</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gu</groupId>
+            <artifactId>configuration</artifactId>
+            <version>2.9</version>
             <scope>compile</scope>
         </dependency>
 
@@ -88,6 +89,11 @@
             <id>scala-tools.org</id>
             <name>Scala-tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
+        </repository>
+        <repository>
+            <id>guardian.github.com</id>
+            <name>Guardian Github Repository</name>
+            <url>http://guardian.github.com/maven/repo-releases</url>
         </repository>
     </repositories>
     <pluginRepositories>

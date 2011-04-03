@@ -1,50 +1,55 @@
 package com.gu.management.scalatra
 
-import org.scalatra.ScalatraFilter
+import com.gu.conf.Configuration
 import com.gu.management.scalatra.Preamble._
-import com.gu.management.manifest.ApplicationFileProvider
+
+import org.scalatra.ScalatraFilter
 
 trait ManagementFilter extends ScalatraFilter {
 
-  protected lazy val managementUrls: Map[String, () => _] = Map(
-    "/management/healthcheck" -> healthcheck _,
-    "/management/manifest" -> manifest _
+  protected def managementGetUrls: Map[String, () => _] = Map(
+    "/management/manifest" -> manifest _,
+    "/management/properties" -> properties _
   )
 
-  protected lazy val fileProvider = new ApplicationFileProvider
+  protected def managementPostUrls: Map[String, () => _] = Map()
 
-  protected lazy val manifestList = List(
-    ManifestFactory(fileProvider), ManifestFactory(fileProvider, "version.txt")
+  protected def configuration: Configuration
+
+  protected lazy val fileProvider = ApplicationFileProviderFactory(servletContext)
+
+  protected def manifestList = List(
+    ManifestFactory(fileProvider, "/WEB-INF/classes/version.txt"), ManifestFactory(fileProvider)
   )
 
-  //protected def managementUrls = { "TODO"}
-
-  protected def manifest() = {
-    manifestList map { _.getReloadedManifestInformation } mkString "\n"
-  }
-
-  protected def healthcheck() = "OK"
-
-  //protected def properties = {
-  ////@Singleton class PropertiesServlet @Inject() (configuration: Configuration) extends ScalatraServlet {
-  ////  get("/*") {
-  ////    configuration
-  ////  }
-  ////}
-  //  "TODO"
-  //}
+  protected def manifest() = manifestList map { _.getReloadedManifestInformation } mkString "\n"
+  protected def properties() = configuration.toString
 
   //protected def status = { "TODO"}
+  //get("/management/status") { status }
 
-  //protected def switchboard = { "TODO"}
+  private def managementUrlLink(url: String) = <a href={ url.replace("^/", "") }>{ url.replace("^/management", "") }</a>
 
-
-  for (url <- managementUrls.keys) {
-    get(url) { managementUrls(url)() }
+  get("/management") {
+    <html>
+      <head>
+        <title>Management URLs</title>
+      </head>
+      <body>
+        <h2>Management URLs</h2>
+        <ul>
+          { managementGetUrls.keys.toList.sorted map { url => <li>{ managementUrlLink(url) }</li> } }
+        </ul>
+      </body>
+    </html>
   }
 
-  //get("/management") { managementUrls }
-  //get("/management/properties") { properties }
-  //get("/management/status") { status }
-  //get("/management/switchboard") { switchboard }
+  for (url <- managementGetUrls.keys) {
+    get(url) { managementGetUrls(url)() }
+  }
+
+  for (url <- managementPostUrls.keys) {
+    post(url) { managementPostUrls(url)() }
+  }
+
 }

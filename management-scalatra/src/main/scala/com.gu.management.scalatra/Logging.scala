@@ -50,9 +50,9 @@ trait LoggingStopWatch extends Logging {
     }
   }
 
-  def verboseTime[X](activity: Any)(block: => X): X = {
+  def verboseTime[X](activity: Any, metric: TimingMetric = stubMetric)(block: => X): X = {
     info("%s starting...".format(activity))
-    time(activity)(block)
+    time(activity, metric)(block)
   }
 
 }
