@@ -25,7 +25,7 @@ trait ManagementFilter extends ScalatraFilter {
   protected def manifest() = manifestList map { _.getReloadedManifestInformation } mkString "\n"
   protected def properties() = configuration.toString
 
-  private def managementUrlLink(url: String) = <a href={ url.replace("^/", "") }>{ url.replace("^/management", "") }</a>
+  private def managementUrlLink(url: String) = <a href={ url substring 1 }>{ url substring 11 }</a>
 
   get("/management") {
     <html>
