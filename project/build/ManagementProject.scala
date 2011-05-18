@@ -13,6 +13,16 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
   lazy val scalatra = project("management-scalatra", "management-scalatra", new Scalatra(_), core)
 
+  lazy val managementLift = project("management-lift", "management-lift", new Lift(_))
+  lazy val versionInfoPlugin = project("sbt-version-info-plugin", "sbt-version-info-plugin", new VersionInfoPlugin(_))
+
+  lazy val packageDeployArtifactPlugin =
+    project("sbt-artifactrep-publish", "sbt-artifactrep-publish", new PublishToArtifactrepPlugin(_), versionInfoPlugin)
+
+  lazy val guDeployArtifactPlugin =
+    project("sbt-gu-deploy-artifactrep-publish", "sbt-gu-deploy-artifactrep-publish", new GuDeployPublishToArtifactrepPlugin(_), versionInfoPlugin)
+
+
 
 
   class Core(info: ProjectInfo) extends DefaultProject(info)
@@ -70,6 +80,19 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
     val servlet = "javax.servlet" % "servlet-api" % "2.4" % "provided"
   }
 
+  class Lift(info: ProjectInfo) extends DefaultProject(info) with PublishSources {
+    val liftWebkit = "net.liftweb" %% "lift-webkit" % "2.3"
+    val slf4japi = "org.slf4j" % "slf4j-api" % "1.6.1"
+
+    val scalatest = "org.scalatest" % "scalatest" % "1.2" % "test"
+    val slf4jsimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
+  }
+
+  class VersionInfoPlugin(info: ProjectInfo) extends PluginProject(info)
+  class PublishToArtifactrepPlugin(info: ProjectInfo) extends PluginProject(info)
+  class GuDeployPublishToArtifactrepPlugin(info: ProjectInfo) extends PluginProject(info)
+
+
 
   trait JavaProject extends BasicScalaProject with JavaTesting {
     // this isn't a scala project, so no need to include the
@@ -82,6 +105,7 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
     override def ivyUpdateLogging = UpdateLogging.Full
   }
 
+
   trait JavaTesting {
     val hamcrest = "org.hamcrest" % "hamcrest-all" % "1.1" % "test"
     val junit = "junit" % "junit" % "4.7" % "test"
@@ -91,6 +115,7 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
     val bryanjswift = "Bryan J Swift Repository" at "http://repos.bryanjswift.com/maven2/"
     val junitInterface = "com.novocode" % "junit-interface" % "0.4.0" % "test"
   }
+
 
   override def managedStyle = ManagedStyle.Maven
 
@@ -102,3 +127,12 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
       Resolver.file("guardian github releases", new File(System.getProperty("user.home")
             + "/guardian.github.com/maven/repo-releases"))
 }
+
+
+
+trait PublishSources extends BasicScalaProject with BasicPackagePaths {
+  lazy val sourceArtifact = Artifact.sources(artifactID)
+  override def packageSrcJar = defaultJarPath("-sources.jar")
+  override def packageToPublishActions = super.packageToPublishActions ++ Seq(packageSrc)
+}
+
