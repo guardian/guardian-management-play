@@ -18,7 +18,8 @@ package com.gu.management.database.logging;
 
 import com.gu.management.timing.TimingMetric;
 import com.mchange.v2.lang.VersionUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 
 import java.sql.Connection;
@@ -26,7 +27,7 @@ import java.sql.SQLException;
 
 public class LoggingDataSource extends DelegatingDataSource {
 
-	private static final Logger LOG = Logger.getLogger(LoggingDataSource.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LoggingDataSource.class);
 
     private final PreparedStatementProxyFactory preparedStatementProxyFactory;
 

@@ -17,12 +17,13 @@
 package com.gu.management.database.logging;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SqlQueryData {
 
 	static final int QUERY_PREVIEW_LENGTH = 60;
-	private static final Logger LOGGER = Logger.getLogger(SqlQueryData.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SqlQueryData.class);
 
 	private final String rawSqlQuery;
 	private final String comment;

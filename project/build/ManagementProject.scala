@@ -7,6 +7,8 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
   lazy val core = project("management-core", "management-core", new Core(_))
 
+  lazy val log4j = project("management-log4j", "management-log4j", new Log4j(_), core)
+
   lazy val spring = project("management-spring", "management-spring", new Spring(_), core)
 
   lazy val guice = project("management-guice", "management-guice", new Guice(_), core)
@@ -28,10 +30,10 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
   class Core(info: ProjectInfo) extends DefaultProject(info)
     with JavaProject  {
 
-    val log4j = "log4j" % "log4j" % "1.2.14"
     val commonsIo = "commons-io" % "commons-io" % "1.4"
     val commonsLang = "commons-lang" % "commons-lang" % "2.4"
 
+    val slf4jApi = "org.slf4j" % "slf4j-api" % "1.6.1"
     val guava = "com.google.guava" % "guava" % "r09"
 
     val springTest = "org.springframework" % "spring-test" % "3.0.0.RELEASE" % "test"
@@ -39,6 +41,13 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
     // don't be tempted to upgrade this to 2.5: the version of resin we use
     // only supports servlet api 2.4!
+    val servlet = "javax.servlet" % "servlet-api" % "2.4" % "provided"
+  }
+
+  class Log4j(info: ProjectInfo) extends DefaultProject(info)
+    with JavaProject {
+
+    val log4j = "log4j" % "log4j" % "1.2.14"
     val servlet = "javax.servlet" % "servlet-api" % "2.4" % "provided"
   }
 

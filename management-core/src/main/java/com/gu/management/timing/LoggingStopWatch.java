@@ -17,53 +17,60 @@
 package com.gu.management.timing;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.util.concurrent.Callable;
 
+/**
+ * A simple stopwatch to log timing of events.
+ *
+ * Note that if you're using scala there's a much better (and simpler)
+ * stopwatch that takes a closure in com.gu.management.StopWatch
+ */
 public class LoggingStopWatch {
 
     protected final Logger log;
     protected final String activity;
 
-    private final Level level;
     private final TimingMetric metric;
 
     private final StopWatch stopWatch = new StopWatch();
 
     public LoggingStopWatch(Logger log, String activity) {
-        this(log, activity, Level.INFO, new NullMetric());
-    }
-
-    public LoggingStopWatch(Logger log, String activity, Level level) {
-        this(log, activity, level, new NullMetric());
+        this(log, activity, new NullMetric());
     }
 
     public LoggingStopWatch(Logger log, String activity, TimingMetric metric) {
-        this(log, activity, Level.INFO, metric);
-    }
-
-    public LoggingStopWatch(Logger log, String activity, Level level, TimingMetric metric) {
         this.log = log;
         this.activity = activity;
-        this.level = level;
         this.metric = metric;
     }
 
     public void start() {
-        if (log.isTraceEnabled())
-            log.trace(activity);
-
+        logStart(activity);
         stopWatch.start();
     }
 
     public void stop() {
         stopWatch.stop();
 
-        if (log.isEnabledFor(level))
-            log.log(level, activity + " completed in " + stopWatch.getTime() + " ms");
+	    if (shouldLogComplete())
+		    logComplete(activity + " completed in " + stopWatch.getTime() + " ms");
     }
+
+	// Arrgh! How did I survive without being able to pass blocks
+	// of code around for so long...?
+	protected boolean shouldLogComplete() {
+		return log.isInfoEnabled();
+	}
+
+	protected void logComplete(String msg) {
+		log.info(msg);
+	}
+
+	protected void logStart(String msg) {
+		if (log.isTraceEnabled()) log.trace(msg);
+	}
 
     public long getTime() {
         return stopWatch.getTime();

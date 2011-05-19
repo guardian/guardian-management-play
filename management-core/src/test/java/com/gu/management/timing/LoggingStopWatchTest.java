@@ -16,13 +16,12 @@
 
 package com.gu.management.timing;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
 
 import javax.swing.*;
 import java.util.concurrent.Callable;
@@ -46,28 +45,18 @@ public class LoggingStopWatchTest {
 	}
 
 	@Test public void testShouldLogAtInfoLevelOnStopByDefaultSoItIsSwichedOnEverywhereByDefault() throws Exception {
-		when(log.isEnabledFor(Level.INFO)).thenReturn(true);
+		when(log.isInfoEnabled()).thenReturn(true);
 
 		LoggingStopWatch stopWatch = new LoggingStopWatch(log, "Done something");
 		stopWatch.start();
 		stopWatch.stop();
 
-		verify(log).log(Level.INFO, String.format("Done something completed in %d ms", stopWatch.getTime()));
-	}
-
-	@Test public void testShouldLogAtSpecifiedLevelOnStop() throws Exception {
-		when(log.isEnabledFor(Level.TRACE)).thenReturn(true);
-
-		LoggingStopWatch stopWatch = new LoggingStopWatch(log, "Done something", Level.TRACE);
-		stopWatch.start();
-		stopWatch.stop();
-
-		verify(log).log(Level.TRACE, String.format("Done something completed in %d ms", stopWatch.getTime()));
+		verify(log).info(String.format("Done something completed in %d ms", stopWatch.getTime()));
 	}
 
 	@Test public void testShouldLogAtStartAndStopIfRunningACallable() throws Exception {
 		when(log.isTraceEnabled()).thenReturn(true);
-		when(log.isEnabledFor(Level.INFO)).thenReturn(true);
+		when(log.isInfoEnabled()).thenReturn(true);
 
 		LoggingStopWatch stopWatch = new LoggingStopWatch(log, "Simple test");
 
@@ -78,7 +67,7 @@ public class LoggingStopWatchTest {
 		});
 
 		verify(log).trace("Simple test");
-		verify(log).log(Level.INFO, String.format("Simple test completed in %d ms", stopWatch.getTime()));
+		verify(log).info(String.format("Simple test completed in %d ms", stopWatch.getTime()));
 	}
 
 	@Test public void testShouldLogOnFailure() throws Exception {
