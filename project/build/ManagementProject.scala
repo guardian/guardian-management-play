@@ -5,7 +5,11 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
   val guardianGithub = "Guardian Github Releases" at "http://guardian.github.com/maven/repo-releases"
 
+  // This is the "old" management-core, replaced by just "management"
   lazy val core = project("management-core", "management-core", new Core(_))
+
+  // The "new" unified management framework
+  lazy val management = project("management", "management", new Management(_))
 
   lazy val log4j = project("management-log4j", "management-log4j", new Log4j(_), core)
 
@@ -16,19 +20,34 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
   lazy val scalatra = project("management-scalatra", "management-scalatra", new Scalatra(_), core)
 
   lazy val managementLift = project("management-lift", "management-lift", new Lift(_))
+
   lazy val versionInfoPlugin = project("sbt-version-info-plugin", "sbt-version-info-plugin", new VersionInfoPlugin(_))
 
-  lazy val packageDeployArtifactPlugin =
-    project("sbt-artifactrep-publish", "sbt-artifactrep-publish", new PublishToArtifactrepPlugin(_), versionInfoPlugin)
+  lazy val packageDeployArtifactPlugin = project("sbt-artifactrep-publish", "sbt-artifactrep-publish",
+    new PublishToArtifactrepPlugin(_), versionInfoPlugin)
 
-  lazy val guDeployArtifactPlugin =
-    project("sbt-gu-deploy-artifactrep-publish", "sbt-gu-deploy-artifactrep-publish", new GuDeployPublishToArtifactrepPlugin(_), versionInfoPlugin)
+  lazy val guDeployArtifactPlugin = project("sbt-gu-deploy-artifactrep-publish", "sbt-gu-deploy-artifactrep-publish",
+    new GuDeployPublishToArtifactrepPlugin(_), versionInfoPlugin)
 
+  lazy val exampleJava = project("example-java", "example-java", new ExampleJava(_), management)
+  lazy val exampleScala = project("example-scala", "example-scala", new ExampleScala(_), management)
 
+  class Management(info: ProjectInfo) extends DefaultProject(info) with Servlet {
+    val slf4jApi = "org.slf4j" % "slf4j-api" % "1.6.1"
+  }
 
+  val JETTY_VERSION = "7.3.1.v20110307"
+
+  class ExampleJava(info: ProjectInfo) extends DefaultWebProject(info) with Servlet {
+    val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % JETTY_VERSION % "test"
+  }
+
+  class ExampleScala(info: ProjectInfo) extends DefaultWebProject(info) with Servlet {
+    val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % JETTY_VERSION % "test"
+  }
 
   class Core(info: ProjectInfo) extends DefaultProject(info)
-    with JavaProject  {
+    with JavaProject with Servlet {
 
     val commonsIo = "commons-io" % "commons-io" % "1.4"
     val commonsLang = "commons-lang" % "commons-lang" % "2.4"
@@ -38,22 +57,16 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
     val springTest = "org.springframework" % "spring-test" % "3.0.0.RELEASE" % "test"
     val springCore = "org.springframework" % "spring-core" % "3.0.0.RELEASE" % "test"
-
-    // don't be tempted to upgrade this to 2.5: the version of resin we use
-    // only supports servlet api 2.4!
-    val servlet = "javax.servlet" % "servlet-api" % "2.4" % "provided"
   }
 
   class Log4j(info: ProjectInfo) extends DefaultProject(info)
-    with JavaProject {
-
+    with JavaProject with Servlet {
     val log4j = "log4j" % "log4j" % "1.2.14"
-    val servlet = "javax.servlet" % "servlet-api" % "2.4" % "provided"
   }
 
 
   class Spring(info: ProjectInfo) extends DefaultProject(info)
-    with JavaProject {
+    with JavaProject with Servlet {
     val springVersion = "3.0.0.RELEASE"
 
     val springWebMvc = "org.springframework" % "spring-webmvc" % springVersion
@@ -64,29 +77,24 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
     val cglib = "cglib" % "cglib-nodep" % "2.1_3"
     val httpClient = "commons-httpclient" % "commons-httpclient" % "3.0.1"
-
-    val servlet = "javax.servlet" % "servlet-api" % "2.4" % "provided"
   }
 
 
   class Guice(info: ProjectInfo) extends DefaultProject(info)
-    with JavaProject {
+    with JavaProject with Servlet {
 
     val guice = "com.google.inject" % "guice" % "2.0"
     val guiceServlet = "com.google.inject.extensions" % "guice-servlet" % "2.0"
 
-    val servlet = "javax.servlet" % "servlet-api" % "2.4" % "provided"
   }
 
-  class Scalatra(info: ProjectInfo) extends DefaultProject(info) {
+  class Scalatra(info: ProjectInfo) extends DefaultProject(info) with Servlet {
 
     val scalatra = "org.scalatra" %% "scalatra" % "2.0.0.M3"
 
     val slf4jApi = "org.slf4j" % "slf4j-api" % "1.6.1"
 
     val guardianConf = "com.gu" % "configuration" % "2.9"
-
-    val servlet = "javax.servlet" % "servlet-api" % "2.4" % "provided"
   }
 
   class Lift(info: ProjectInfo) extends DefaultProject(info) with PublishSources {
@@ -123,6 +131,12 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
     // compatibility layer to get junit tests running under sbt
     val bryanjswift = "Bryan J Swift Repository" at "http://repos.bryanjswift.com/maven2/"
     val junitInterface = "com.novocode" % "junit-interface" % "0.4.0" % "test"
+  }
+
+  trait Servlet {
+    // don't be tempted to upgrade this to 2.5: the version of resin we use
+    // only supports servlet api 2.4!
+    val servlet = "javax.servlet" % "servlet-api" % "2.4" % "provided"
   }
 
 
