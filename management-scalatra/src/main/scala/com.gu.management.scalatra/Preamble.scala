@@ -47,3 +47,7 @@ object SwitchableStateFactory {
     switchable
   }
 }
+
+object OptionTrimmingStrings {
+  def apply(s: String) = Option(s) filter { !_.trim().isEmpty }
+}

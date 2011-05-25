@@ -7,6 +7,8 @@ import org.scalatra.ScalatraFilter
 
 trait ManagementFilter extends ScalatraFilter {
 
+  val versionTxt = "/WEB-INF/classes/version.txt"
+
   protected def managementGetUrls: Map[String, () => _] = Map(
     "/management/manifest" -> manifest _,
     "/management/properties" -> properties _
@@ -19,11 +21,15 @@ trait ManagementFilter extends ScalatraFilter {
   protected lazy val fileProvider = ApplicationFileProviderFactory(servletContext)
 
   protected def manifestList = List(
-    ManifestFactory(fileProvider, "/WEB-INF/classes/version.txt"), ManifestFactory(fileProvider)
+    ManifestFactory(fileProvider, versionTxt), ManifestFactory(fileProvider)
   )
 
   protected def manifest() = manifestList map { _.getReloadedManifestInformation } mkString "\n"
   protected def properties() = configuration.toString
+  protected def getValueFromManifest(key: String) = {
+    val manifestValue = ManifestFactory(fileProvider, versionTxt).getValueFor(key, "")
+    OptionTrimmingStrings(manifestValue) getOrElse { ManifestFactory(fileProvider).getValueFor(key, "") }
+  }
 
   private def managementUrlLink(url: String) = <a href={ url substring 1 }>{ url substring 11 }</a>
 
