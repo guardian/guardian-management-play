@@ -34,6 +34,9 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
   class Management(info: ProjectInfo) extends DefaultProject(info) with Servlet {
     val slf4jApi = "org.slf4j" % "slf4j-api" % "1.6.1"
+
+    // for testing, we want log entries to display please
+    val slf4jSimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
   }
 
   val JETTY_VERSION = "7.3.1.v20110307"
@@ -44,6 +47,7 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
   class ExampleScala(info: ProjectInfo) extends DefaultWebProject(info) with Servlet {
     val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % JETTY_VERSION % "test"
+    val slf4jsimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
   }
 
   class Core(info: ProjectInfo) extends DefaultProject(info)

@@ -22,7 +22,7 @@ trait ManagementPage {
 }
 
 trait XhmlManagementPage extends ManagementPage {
-  final def render(r: Req) = XhtmlResponse(
+  final def render(r: Req) = HtmlResponse(
       <html xmlns="http://www.w3.org/1999/xhtml">
         <head>
           <title>{title}</title>
