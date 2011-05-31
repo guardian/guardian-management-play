@@ -4,30 +4,31 @@ import com.gu.management._
 import javax.servlet.http._
 
 // example of creating your own new page type
-object DummyPage extends ManagementPage {
+class DummyPage extends ManagementPage {
   val path = "/management/dummy"
   def get(req: HttpServletRequest) = PlainTextResponse("Hello dummy!")
 }
 
 // switches
 object Switches {
-  object omniture extends DefaultSwitch("omniture", "enables omniture java script")
-  object takeItDown extends DefaultSwitch("take-it-down", "enable this switch to take the site down", initiallyOn = false)
+  val omniture = new DefaultSwitch("omniture", "enables omniture java script")
+  val takeItDown = new DefaultSwitch("take-it-down", "enable this switch to take the site down", initiallyOn = false)
 
   val all = omniture :: takeItDown :: Nil
 }
 
 // timing stuff
 object TimingMetrics {
-  object downtime extends TimingMetric("downtime")
+  val downtime = new TimingMetric("downtime")
+  val requests = new TimingMetric("requests")
 
-  val all = downtime :: Nil
+  val all = downtime :: requests :: Nil
 }
 
 class ScalaManagementFilter extends ManagementFilter {
   lazy val pages =
-    DummyPage ::
-    ManifestPage ::
+    new DummyPage() ::
+    new ManifestPage() ::
     new Switchboard(Switches.all) ::
     new StatusPage(TimingMetrics.all) ::
     Nil

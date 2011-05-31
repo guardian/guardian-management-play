@@ -6,7 +6,7 @@
 
     <filter>
         <filter-name>managementFilter</filter-name>
-        <filter-class>com.gu.management.example.ScalaManagementFilter</filter-class>
+        <filter-class>com.gu.management.example.JavaManagementFilter</filter-class>
     </filter>
 
     <filter-mapping>

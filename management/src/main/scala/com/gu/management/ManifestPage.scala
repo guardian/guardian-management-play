@@ -3,7 +3,7 @@ package com.gu.management
 import io.Source
 import javax.servlet.http.HttpServletRequest
 
-object ManifestPage extends ManagementPage {
+class ManifestPage extends ManagementPage {
 
   val path = "/management/manifest"
 

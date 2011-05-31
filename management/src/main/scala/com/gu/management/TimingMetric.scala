@@ -1,6 +1,7 @@
 package com.gu.management
 
 import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.Callable
 
 object TimingMetric {
   val Empty = new TimingMetric("Empty")
@@ -33,11 +34,15 @@ class TimingMetric(statusElementName: String) {
   // t measure {
   //   code here
   // }
-  def measure[T](block: => T) {
+  def measure[T](block: => T) = {
     val s = new StopWatch
     val result = block
     recordTimeSpent(s.elapsed)
     result
   }
+
+  // for java developers, these are easier to call
+  def call[T](c: Callable[T]) = measure { c.call }
+  def run(r: Runnable) = measure { r.run() }
 }
 

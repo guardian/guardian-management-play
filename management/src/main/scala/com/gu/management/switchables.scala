@@ -11,6 +11,7 @@ trait Switch {
   def isSwitchedOn: Boolean
 
   def whenOn(block: => Unit) { if (isSwitchedOn) block }
+  def whenOff(block: => Unit) { if (!isSwitchedOn) block }
 
   def opt[T](block: => T): Option[T] = if (isSwitchedOn) Some(block) else None
 }

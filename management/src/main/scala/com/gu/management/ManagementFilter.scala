@@ -81,13 +81,11 @@ trait Postable extends ManagementPage {
 
 
 
-trait ManagementFilter extends Filter {
-  private val log = LoggerFactory.getLogger(getClass)
-
+trait ManagementFilter extends Filter with Loggable {
   lazy val version = Option(getClass.getPackage.getImplementationVersion) getOrElse "DEV"
 
   def init(filterConfig: FilterConfig) {
-    log.info("Management filter %s initialised" format (version))
+    logger.info("Management filter %s initialised" format (version))
   }
 
   def doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
