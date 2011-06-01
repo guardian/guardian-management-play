@@ -15,12 +15,6 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
   lazy val spring = project("management-spring", "management-spring", new Spring(_), core)
 
-  lazy val guice = project("management-guice", "management-guice", new Guice(_), core)
-
-  lazy val scalatra = project("management-scalatra", "management-scalatra", new Scalatra(_), core)
-
-  lazy val managementLift = project("management-lift", "management-lift", new Lift(_))
-
   lazy val versionInfoPlugin = project("sbt-version-info-plugin", "sbt-version-info-plugin", new VersionInfoPlugin(_))
 
   lazy val packageDeployArtifactPlugin = project("sbt-artifactrep-publish", "sbt-artifactrep-publish",
@@ -29,8 +23,7 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
   lazy val guDeployArtifactPlugin = project("sbt-gu-deploy-artifactrep-publish", "sbt-gu-deploy-artifactrep-publish",
     new GuDeployPublishToArtifactrepPlugin(_), versionInfoPlugin)
 
-  lazy val exampleJava = project("example-java", "example-java", new ExampleJava(_), management)
-  lazy val exampleScala = project("example-scala", "example-scala", new ExampleScala(_), management)
+  lazy val example = project("example", "example", new Example(_), management)
 
   class Management(info: ProjectInfo) extends DefaultProject(info) with Servlet {
     val slf4jApi = "org.slf4j" % "slf4j-api" % "1.6.1"
@@ -41,11 +34,7 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
   val JETTY_VERSION = "7.3.1.v20110307"
 
-  class ExampleJava(info: ProjectInfo) extends DefaultWebProject(info) with Servlet {
-    val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % JETTY_VERSION % "test"
-  }
-
-  class ExampleScala(info: ProjectInfo) extends DefaultWebProject(info) with Servlet {
+  class Example(info: ProjectInfo) extends DefaultWebProject(info) with Servlet {
     val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % JETTY_VERSION % "test"
     val slf4jsimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
   }
@@ -81,32 +70,6 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
     val cglib = "cglib" % "cglib-nodep" % "2.1_3"
     val httpClient = "commons-httpclient" % "commons-httpclient" % "3.0.1"
-  }
-
-
-  class Guice(info: ProjectInfo) extends DefaultProject(info)
-    with JavaProject with Servlet {
-
-    val guice = "com.google.inject" % "guice" % "2.0"
-    val guiceServlet = "com.google.inject.extensions" % "guice-servlet" % "2.0"
-
-  }
-
-  class Scalatra(info: ProjectInfo) extends DefaultProject(info) with Servlet {
-
-    val scalatra = "org.scalatra" %% "scalatra" % "2.0.0.M3"
-
-    val slf4jApi = "org.slf4j" % "slf4j-api" % "1.6.1"
-
-    val guardianConf = "com.gu" % "configuration" % "2.9"
-  }
-
-  class Lift(info: ProjectInfo) extends DefaultProject(info) with PublishSources {
-    val liftWebkit = "net.liftweb" %% "lift-webkit" % "2.3"
-    val slf4japi = "org.slf4j" % "slf4j-api" % "1.6.1"
-
-    val scalatest = "org.scalatest" % "scalatest" % "1.2" % "test"
-    val slf4jsimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
   }
 
   class VersionInfoPlugin(info: ProjectInfo) extends PluginProject(info)

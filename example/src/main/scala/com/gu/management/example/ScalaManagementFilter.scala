@@ -14,7 +14,7 @@ object Switches {
   val omniture = new DefaultSwitch("omniture", "enables omniture java script")
   val takeItDown = new DefaultSwitch("take-it-down", "enable this switch to take the site down", initiallyOn = false)
 
-  val all = omniture :: takeItDown :: Nil
+  val all = omniture :: takeItDown :: Healthcheck.switch :: Nil
 }
 
 // timing stuff
@@ -31,5 +31,6 @@ class ScalaManagementFilter extends ManagementFilter {
     new ManifestPage() ::
     new Switchboard(Switches.all) ::
     new StatusPage(TimingMetrics.all) ::
+    new HealthcheckManagementPage() ::
     Nil
 }

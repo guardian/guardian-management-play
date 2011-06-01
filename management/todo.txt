@@ -1,0 +1,12 @@
+Still to port from management-core:
+
+1. Healthcheck management page and switch
+
+2. request logging filter
+
+
+Re-implement:
+
+management-log4j
+and implment management-logback
+
