@@ -45,7 +45,7 @@ class RequestLoggingFilter(
 
     lazy val loggableParamString = loggableParams match {
       case Nil => ""
-      case l => "?" + l.map { case (k, v) => k + "=" + URLEncoder.encode(v, "UTF-8") } mkString "&"
+      case l => l.map { case (k, v) => k + "=" + URLEncoder.encode(v, "UTF-8") } mkString("?", "&", "")
     }
 
     def filterParamForLogging(p: Tuple2[String, String] ) = p match {
