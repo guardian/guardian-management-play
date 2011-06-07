@@ -6,7 +6,7 @@ import xml.NodeSeq
 object ServletRequestMatchers {
   object Path {
     def unapply(r: HttpServletRequest) =
-      Some(Option(r.getContextPath).getOrElse("") + Option(r.getServletPath).getOrElse(""))
+      Some(Option(r.getServletPath).getOrElse(""))
   }
 
   object GET {
