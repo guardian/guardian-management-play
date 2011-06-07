@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
  * and call super with the parameters you want to set
  */
 class RequestLoggingFilter(
-    metric: TimingMetric = TimingMetric.Empty,
+    metric: TimingMetric = TimingMetric.empty,
     shouldLogParametersOnNonGetRequests: Boolean = false,
     parametersToSuppressInLogs: Set[String] = Set.empty,
     pathPrefixesToLogAtTrace: Set[String] = Set("/management"),

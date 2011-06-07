@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.Callable
 
 object TimingMetric {
-  val Empty = new TimingMetric("Empty")
+  val empty = new TimingMetric("Empty")
 }
 
 class TimingMetric(statusElementName: String) {
