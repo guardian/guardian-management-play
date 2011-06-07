@@ -48,7 +48,7 @@ class RequestLoggingFilter(
       case l => "?" + l.map { case (k, v) => k + "=" + URLEncoder.encode(v, "UTF-8") } mkString "&"
     }
 
-    def filterParamForLogging(p: Tuple2[String, String] ) = p match {
+    def filterParamForLogging(p: (String, String) ) = p match {
       case (k, v) if (parametersToSuppressInLogs contains k) =>
         k -> "*****"
       case (k, v) if ("POST" == method && v.length > maximumSizeForPostParameters) =>
