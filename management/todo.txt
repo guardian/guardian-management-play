@@ -1,9 +1,7 @@
 Still to port from management-core:
 
-1. Healthcheck management page and switch
-
 2. request logging filter
-
+ -> just needs testing now
 
 Re-implement:
 

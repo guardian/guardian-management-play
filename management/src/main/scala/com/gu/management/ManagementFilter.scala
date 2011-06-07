@@ -2,109 +2,24 @@ package com.gu.management
 
 import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 import javax.servlet._
-import org.slf4j.LoggerFactory
-import xml.NodeSeq
-import scala.PartialFunction._
-
-object ServletRequestMatchers {
-  object Path {
-    def unapply(r: HttpServletRequest) =
-      Some(Option(r.getContextPath).getOrElse("") + Option(r.getServletPath).getOrElse(""))
-  }
-
-  object GET {
-    def unapply(r: HttpServletRequest) =
-      Option(r).filter(_.getMethod equalsIgnoreCase "GET")
-  }
-
-  object POST {
-    def unapply(r: HttpServletRequest) =
-      Option(r).filter(_.getMethod equalsIgnoreCase "POST")
-  }
-}
-
-abstract class ManagementPage {
-  /**
-    * The path to this page. You should include the full
-    * servlet path including /management
-    */
-  val path: String
-
-  /**
-    * Process a get request to this page
-   */
-  def get(req: HttpServletRequest): Response
-
-  // You probably don't need to override this one unless you're doing something
-  // very funky.
-  import ServletRequestMatchers._
-  def dispatch: PartialFunction[HttpServletRequest, Response] = {
-    case r @ GET(Path(p)) if p equalsIgnoreCase path => get(r)
-  }
-
-  def url = path.dropWhile('/' ==)
-  def linktext = path
-}
 
 
-abstract class HtmlManagementPage extends ManagementPage {
-  final def get(req: HttpServletRequest) = HtmlResponse(
-      <html xmlns="http://www.w3.org/1999/xhtml">
-        <head>
-          <title>{title}</title>
-        </head>
-        <body>
-          <h2>{title}</h2>
-          { body(req) }
-        </body>
-      </html>)
-
-  def title: String
-  def body(r: HttpServletRequest): NodeSeq
-}
-
-
-
-/**
- * Mixin this trait if you want to support posting to your management page
- */
-trait Postable extends ManagementPage {
-  import ServletRequestMatchers._
-  def post(r: HttpServletRequest)
-
-  override def dispatch = super.dispatch orElse {
-    case r @ POST(Path(p)) if p equalsIgnoreCase path =>
-      post(r)
-      RedirectResponse(r.getRequestURI)
-  }
-}
-
-
-
-trait ManagementFilter extends Filter with Loggable {
+trait ManagementFilter extends AbstractHttpFilter with Loggable {
   lazy val version = Option(getClass.getPackage.getImplementationVersion) getOrElse "DEV"
 
-  def init(filterConfig: FilterConfig) {
-    logger.info("Management filter %s initialised" format (version))
+  override def init(filterConfig: FilterConfig) {
+    logger.info("Management filter v%s initialised" format (version))
   }
 
-  def doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-    val httpReq = request.asInstanceOf[HttpServletRequest]
-    val httpResp = response.asInstanceOf[HttpServletResponse]
-
+  def doHttpFilter(httpReq: HttpServletRequest, httpResp: HttpServletResponse, chain: FilterChain) {
     val page = pagesWithIndex.find(_.dispatch.isDefinedAt(httpReq))
 
     if (page.isDefined) {
       page.foreach(_.dispatch(httpReq).writeTo(httpResp))
     } else {
-      chain.doFilter(request, response)
+      chain.doFilter(httpReq, httpResp)
     }
   }
-
-  def destroy() {}
-
-  val pages: List[ManagementPage]
-
 
   object IndexPage extends HtmlManagementPage {
     val path = "/management"
@@ -123,4 +38,10 @@ trait ManagementFilter extends Filter with Loggable {
   }
 
   lazy val pagesWithIndex = IndexPage :: pages
+
+  /**
+   * Implement this member with a list of the management pages
+   * you want to include
+   */
+  val pages: List[ManagementPage]
 }

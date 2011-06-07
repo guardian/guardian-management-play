@@ -30,13 +30,19 @@ class ManagementProject(info: ProjectInfo) extends ParentProject(info) {
 
     // for testing, we want log entries to display please
     val slf4jSimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
+
+    val specs2 = "org.specs2" %% "specs2" % "1.2" % "test"
+
+    def specs2Framework = new TestFramework("org.specs2.runner.SpecsFramework")
+    override def testFrameworks = super.testFrameworks ++ Seq(specs2Framework)
+
   }
 
   val JETTY_VERSION = "7.3.1.v20110307"
 
   class Example(info: ProjectInfo) extends DefaultWebProject(info) with Servlet {
     val jettyWebapp = "org.eclipse.jetty" % "jetty-webapp" % JETTY_VERSION % "test"
-    val slf4jsimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
+    //val slf4jsimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
   }
 
   class Core(info: ProjectInfo) extends DefaultProject(info)
