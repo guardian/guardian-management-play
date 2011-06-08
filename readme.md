@@ -30,7 +30,7 @@ Getting Started
 The management pages are web framework agnostic: they use their own mini
 framework, blatently inspired/ripped off from [lift](http://www.liftweb.net).
 
-1. Add the dependency to your build
+Add the dependency to your build
 -----------------------------------
 
 In sbt 0.7.x:
@@ -46,7 +46,7 @@ In your build.sbt for sbt 0.10:
 Currently only scala 2.8.1 is supported, we'll add cross builds as demand arises. It's all a bit pre-release
 at the moment, hence the snapshot version: release versions will be built in the next few weeks.
 
-2. Add the management filter to your web.xml
+Add the management filter to your web.xml
 --------------------------------------------
 
 To avoid any conflict with your choice of web framework, the managment
@@ -72,7 +72,7 @@ pages are implemented as a filter. So, for example:
 
 The filter-class is a class that you are going to implement.
 
-3. Implement the filter class
+Implement the filter class
 -----------------------------
 
 Your filter class should derive from `com.gu.management.ManagementFilter` and implement
@@ -90,7 +90,7 @@ the pages member:
 Even for mostly java projects, you'll need to write your management pages in scala. However,
 things like timing metrics and switches have a java-friendly interface and are usable from java.
 
-4. Look at the example!
+Look at the example!
 -----------------------
 
 The [example project](https://github.com/guardian/guardian-management/tree/master/example) has
