@@ -15,6 +15,15 @@ pages.
 This simple framework aims to make it simple to generate the standard management
 pages and easy to create new app-specific ones.
 
+
+Note for the Old Skool
+======================
+
+The old management libraries, that were web-framework specific, can be found in
+the [3.x](https://github.com/guardian/guardian-management/tree/3.x) branch of this project.
+There is no intention to maintain these further.
+
+
 Getting Started
 ===============
 
@@ -99,4 +108,7 @@ the
 [status page](https://github.com/guardian/guardian-management/blob/master/management/src/main/scala/com/gu/management/StatusPage.scala),
 and a more complex page that supports POSTs is
 [the switchboard](https://github.com/guardian/guardian-management/blob/master/management/src/main/scala/com/gu/management/switchables.scala).
+
+
+
 
