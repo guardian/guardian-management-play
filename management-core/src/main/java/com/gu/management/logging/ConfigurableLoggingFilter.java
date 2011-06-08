@@ -4,19 +4,18 @@ import com.gu.management.timing.LoggingStopWatch;
 import com.gu.management.timing.NullMetric;
 import com.gu.management.timing.TimingMetric;
 import com.gu.management.util.VoidCallable;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Set;
+
 
 abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
 
@@ -50,11 +49,11 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
         super.doFilter(servletRequest, servletResponse, filterChain);
-        Level logLevel = getLogLevelFor((HttpServletRequest) servletRequest);
-        final HttpServletRequest request = (HttpServletRequest) servletRequest;
+
+	    final HttpServletRequest request = (HttpServletRequest) servletRequest;
         final HttpServletResponse response = (HttpServletResponse) servletResponse;
         String logMessage = buildLogMessage(request);
-        LoggingStopWatch stopWatch = new RequestLoggingStopWatch(getLogger(), logMessage, logLevel);
+        LoggingStopWatch stopWatch = new RequestLoggingStopWatch(getLogger(), logMessage, request);
 
         try {
             stopWatch.executeAndLog(new VoidCallable() {
@@ -106,10 +105,6 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
         return logMessageBuilder.toString();
     }
 
-    protected Level getLogLevelFor(HttpServletRequest request) {
-        return shouldFullyLogRequest(request) ? Level.INFO : Level.TRACE;
-    }
-
     protected String getRequestParameterValue(String paramName, HttpServletRequest request) {
         return parametersToSuppressInLogs.contains(paramName) ? "*****" : getMaxLengthParamFromRequest(request, paramName);
     }
@@ -134,14 +129,26 @@ abstract class ConfigurableLoggingFilter extends GuAppServerHeaderFilter {
     }
 
     private class RequestLoggingStopWatch extends LoggingStopWatch {
-        private RequestLoggingStopWatch(Logger logger, String activity, Level logLevel) {
-            super(logger, activity, logLevel);
-        }
+	    private final boolean shouldFullyLog;
 
-        @Override
-        public void start() {
-            log.debug(activity);
-            super.start();
-        }
+	    private RequestLoggingStopWatch(Logger logger, String activity, HttpServletRequest request) {
+		    super(logger, activity);
+		    shouldFullyLog = shouldFullyLogRequest(request);
+	    }
+
+	    @Override
+	    protected boolean shouldLogComplete() {
+		    return shouldFullyLog && log.isInfoEnabled();
+	    }
+
+	    @Override
+	    protected void logComplete(String msg) {
+		    log.info(msg);
+	    }
+
+	    @Override
+	    protected void logStart(String msg) {
+		    log.debug(msg);
+	    }
     }
 }

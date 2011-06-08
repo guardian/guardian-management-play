@@ -17,7 +17,8 @@
 package com.gu.management.switching;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,7 +29,7 @@ import java.io.OutputStreamWriter;
 import java.util.*;
 
 public class SwitchboardServlet extends HttpServlet {
-    private static final Logger LOG = Logger.getLogger(SwitchboardServlet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SwitchboardServlet.class);
 
     private final List<Switchable> switches;
 

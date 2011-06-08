@@ -30,7 +30,7 @@ public class AbbreviatedExceptionFormatter {
 	}
 
 	private static String formatWithSeparator(Throwable e, String separator) {
-		StringBuffer errorMessage = new StringBuffer();
+		StringBuilder errorMessage = new StringBuilder();
 
 		errorMessage.append("\n Caused by: ");
 

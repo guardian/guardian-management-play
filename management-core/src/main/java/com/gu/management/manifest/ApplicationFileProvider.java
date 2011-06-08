@@ -18,7 +18,8 @@ package com.gu.management.manifest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -28,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ApplicationFileProvider {
-    private static final Logger LOG = Logger.getLogger(ApplicationFileProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationFileProvider.class);
 
     private ServletContext servletContext;
 
@@ -36,6 +37,7 @@ public class ApplicationFileProvider {
         this.servletContext = servletContext;
     }
 
+    @SuppressWarnings({"unchecked"})
     public List<String> getFileContents(String relativePath) {
         File file = getFile(relativePath);
 
@@ -45,8 +47,7 @@ public class ApplicationFileProvider {
         }
 
         try {
-            //noinspection unchecked
-            return (List<String>) FileUtils.readLines(file);
+	        return (List<String>) FileUtils.readLines(file);
         } catch( IOException e ) {
             throw new RuntimeException("Error reading application file", e);
         }

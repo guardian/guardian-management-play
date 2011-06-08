@@ -16,7 +16,8 @@
 
 package com.gu.management.manifest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,14 +25,14 @@ import java.util.Map;
 
 public class Manifest {
 
-	private static final Logger LOGGER = Logger.getLogger(Manifest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Manifest.class);
 
 	private Long revisionNumber;
 	private String absolutePath;
 	private String manifestString;
 	private String manifestFilePath = "META-INF/MANIFEST.MF";
 	private ApplicationFileProvider fileProvider;
-    private Map<String, String> values = new HashMap<String, String>();;
+    private Map<String, String> values = new HashMap<String, String>();
 
     public Manifest(ApplicationFileProvider fileProvider) {
         this.fileProvider=fileProvider;

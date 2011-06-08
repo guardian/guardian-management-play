@@ -16,15 +16,16 @@
 
 package com.gu.management.database.checking;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SimpleConnectionChecker implements ConnectionChecker {
 
-	private static final Logger LOGGER = Logger.getLogger(SimpleConnectionChecker.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleConnectionChecker.class);
 	private String query;
 	private SessionFactory sessionFactory;
 

@@ -18,12 +18,13 @@ package com.gu.management.database.checking;
 
 import org.apache.commons.httpclient.util.TimeoutController;
 import org.apache.commons.httpclient.util.TimeoutController.TimeoutException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class TimeoutConnectionChecker implements ConnectionChecker {
 
-	private static final Logger LOGGER = Logger.getLogger(TimeoutConnectionChecker.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TimeoutConnectionChecker.class);
 
 	private int timeout;
 	private final ConnectionCheckRunner runner;

@@ -16,11 +16,12 @@
 
 package com.gu.management.database.logging;
 
+import com.gu.management.timing.DebugLevelLoggingStopWatch;
 import com.gu.management.timing.LoggingStopWatch;
 import com.gu.management.timing.TimingMetric;
 import net.sf.cglib.proxy.InvocationHandler;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,7 +31,7 @@ import java.util.concurrent.Callable;
 class PreparedStatementProxy implements InvocationHandler {
 
 
-	private static final Logger LOG = Logger.getLogger(PreparedStatementProxy.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PreparedStatementProxy.class);
 
 	private final PreparedStatement targetStatement;
 	private final String sqlQuery;
@@ -51,17 +52,14 @@ class PreparedStatementProxy implements InvocationHandler {
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
 		if (timeableMethodPredicate.apply(method)) {
 
-			LoggingStopWatch loggingStopWatch = new LoggingStopWatch(LOG, "Query " + getQueryDisplayName(), Level.DEBUG);
+			LoggingStopWatch loggingStopWatch = new DebugLevelLoggingStopWatch(LOG, "Query " + getQueryDisplayName(), metric);
 
-			Object result = loggingStopWatch.executeAndLog(new Callable<Object>() {
+			return loggingStopWatch.executeAndLogWithMetricUpdate(new Callable<Object>() {
 				@Override
 				public Object call() throws Exception {
 					return invokeMethodAndThrowAnyUnderlyingException(method, args);
 				}
 			});
-
-			metric.recordTimeSpent(loggingStopWatch.getTime());
-			return result;
 		}
 
         return invokeMethodAndThrowAnyUnderlyingException(method, args);
