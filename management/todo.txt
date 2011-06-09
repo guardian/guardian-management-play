@@ -1,7 +1,3 @@
-Still to port from management-core:
-
-2. request logging filter
- -> just needs testing now
 
 Re-implement:
 

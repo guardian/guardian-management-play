@@ -2,11 +2,6 @@ import java.util.jar._
 
 name := "management"
 
-organization := "com.gu"
-
-// try adding "in ThisBuild" here
-version := "4.0"
-
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.6.1"
 
 libraryDependencies += "javax.servlet" % "servlet-api" % "2.4" % "provided"

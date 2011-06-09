@@ -1,6 +1,7 @@
 package com.gu.management.example
 
 import com.gu.management._
+import logback._
 import javax.servlet.http._
 
 // example of creating your own new page type
@@ -32,5 +33,6 @@ class ScalaManagementFilter extends ManagementFilter {
     new Switchboard(Switches.all) ::
     new StatusPage(TimingMetrics.all) ::
     new HealthcheckManagementPage() ::
+    new LogbackLevelPage() ::
     Nil
 }

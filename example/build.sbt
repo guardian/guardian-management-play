@@ -1,8 +1,7 @@
 
 
 libraryDependencies ++= Seq(
-    "javax.servlet" % "servlet-api" % "2.4" % "provided",
-    "org.slf4j" % "slf4j-simple" % "1.6.1")
+    "javax.servlet" % "servlet-api" % "2.4" % "provided")
     
 // include web plugin settings in this project
 seq(WebPlugin.webSettings :_*)
