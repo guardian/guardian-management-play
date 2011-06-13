@@ -1,6 +1,7 @@
 package com.gu.management
 
 import org.slf4j.Logger
+import java.util.concurrent.Callable
 
 
 class StopWatch {
@@ -36,4 +37,15 @@ object Timing {
     }
   }
 
+  def debug[T](logger: Logger, activity: String, metric: TimingMetric, callable: Callable[T]): T =
+    debug(logger, activity, metric)(callable.call())
+
+  def info[T](logger: Logger, activity: String, metric: TimingMetric, callable: Callable[T]): T =
+    info(logger, activity, metric)(callable.call())
+
+  def debug(logger: Logger, activity: String, metric: TimingMetric, callable: Runnable): Unit =
+    debug(logger, activity, metric)(callable.run())
+
+  def info(logger: Logger, activity: String, metric: TimingMetric, callable: Runnable): Unit =
+    info(logger, activity, metric)(callable.run())
 }
