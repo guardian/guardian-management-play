@@ -3,16 +3,14 @@ package com.gu.management
 import javax.servlet.http.HttpServletRequest
 
 object StatusPage {
-  def apply(metrics: Seq[TimingMetric]) = new StatusPage(metrics)
+  def apply(metrics: Seq[Metric]) = new StatusPage(metrics)
 }
 
-class StatusPage(metrics: Seq[TimingMetric]) extends ManagementPage {
+class StatusPage(metrics: Seq[Metric]) extends ManagementPage {
   val path = "/management/status"
 
   def get(req: HttpServletRequest) = XmlResponse(
     <status>
-      <timings>
-        {metrics map {_.toXml}}
-      </timings>
+      {metrics map {_.toXml}}
     </status>)
 }
