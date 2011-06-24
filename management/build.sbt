@@ -5,7 +5,7 @@ name := "management"
 organization := "com.gu"
 
 // try adding "in ThisBuild" here
-version := "4.0-SNAPSHOT"
+version := "4.0"
 
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.6.1"
 
