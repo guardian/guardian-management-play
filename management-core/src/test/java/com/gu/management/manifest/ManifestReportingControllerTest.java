@@ -27,7 +27,7 @@ public class ManifestReportingControllerTest {
 
 	@Test
 	public void shouldWriteManifestToResponseStream() throws Exception {
-		when(manifest.getRevisionNumber()).thenReturn(666L);
+		when(manifest.getRevisionNumber()).thenReturn("666");
 
 		MockHttpServletResponse responseMock = new MockHttpServletResponse();
 
@@ -58,8 +58,8 @@ public class ManifestReportingControllerTest {
     @Test
     public void shouldAcceptMultipleManifests() throws Exception {
         Manifest secondManifest = Mockito.mock(Manifest.class);
-        when(secondManifest.getRevisionNumber()).thenReturn(42L);
-        when(manifest.getRevisionNumber()).thenReturn(666L);
+        when(secondManifest.getRevisionNumber()).thenReturn("42");
+        when(manifest.getRevisionNumber()).thenReturn("666");
         when(secondManifest.getManifestInformation()).thenReturn("View Manifest Information");
 
         MockHttpServletResponse responseMock = new MockHttpServletResponse();

@@ -31,7 +31,7 @@ public class ManifestTest {
 
     @Test
     public void shouldReadRevision() throws Exception {
-        assertThat(productionManifest.getRevisionNumber(), equalTo(1234L));
+        assertThat(productionManifest.getRevisionNumber(), equalTo("1234"));
     }
 
     @Test
@@ -80,10 +80,10 @@ public class ManifestTest {
         fileProvider.setReturnedFileContents(Arrays.asList("Revision: 678"));
         Manifest manifest = new Manifest(fileProvider);
         manifest.setManifestFilePath("src/test/com/gu/r2/common/management/MANIFEST.MF");
-        assertThat(manifest.getRevisionNumber(), equalTo(678L));
+        assertThat(manifest.getRevisionNumber(), equalTo("678"));
         fileProvider.setReturnedFileContents(Arrays.asList("Revision: 890"));
         manifest.reload();
-        assertThat(manifest.getRevisionNumber(), equalTo(890L));
+        assertThat(manifest.getRevisionNumber(), equalTo("890"));
     }
 
 
