@@ -36,15 +36,14 @@ Add the dependency to your build
 In sbt 0.7.x:
 
     val guardianGithubSnapshots = "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-snapshots"
-    val guManagement = "com.gu" %% "management" % "4.0-SNAPSHOT"
+    val guManagement = "com.gu" %% "management" % "4.1-SNAPSHOT"
 
 In your build.sbt for sbt 0.10:
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-snapshots"
-    libraryDependencies += "com.gu" %% "management" % "4.0-SNAPSHOT"
+    libraryDependencies += "com.gu" %% "management" % "4.1-SNAPSHOT"
 
-Currently only scala 2.8.1 is supported, we'll add cross builds as demand arises. It's all a bit pre-release
-at the moment, hence the snapshot version: release versions will be built in the next few weeks.
+As of 4.1-SNAPSHOT, scala 2.8.1 and 2.9.0-1 are supported.
 
 Add the management filter to your web.xml
 --------------------------------------------
