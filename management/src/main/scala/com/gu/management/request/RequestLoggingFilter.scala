@@ -65,6 +65,9 @@ class RequestLoggingFilter(
 
     val activity = req.method + " " + req.fullPath + req.loggableParamString
 
+    if (req.shouldLog)
+      logger.trace(activity)
+
     val stopWatch = new StopWatch
     try {
       val (key, value) = AppServerHeader()
