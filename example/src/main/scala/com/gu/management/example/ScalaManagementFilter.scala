@@ -26,6 +26,13 @@ object TimingMetrics {
   val all = downtime :: requests :: Nil
 }
 
+// properties
+object Properties {
+  // If I were using com.gu.configuration I'd comment out the following line
+  // val all = new ConfigurationFactory getConfiguration ("music", "conf/arts_music").toString
+  val all = "key1=value1\nkey2=value2"
+}
+
 class ScalaManagementFilter extends ManagementFilter {
   lazy val pages =
     new DummyPage() ::
@@ -33,6 +40,7 @@ class ScalaManagementFilter extends ManagementFilter {
     new Switchboard(Switches.all) ::
     new StatusPage(TimingMetrics.all) ::
     new HealthcheckManagementPage() ::
+    new PropertiesPage(Properties.all) ::
     new LogbackLevelPage() ::
     Nil
 }
