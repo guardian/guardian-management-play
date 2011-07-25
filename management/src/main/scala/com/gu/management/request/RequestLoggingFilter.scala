@@ -22,7 +22,8 @@ class RequestLoggingFilter(
 
   protected lazy val logger = LoggerFactory.getLogger(getClass)
 
-
+  // Default constructor for use in web.xml as opposed to dependency injection frameworks
+  def this() = this(TimingMetric.empty, false, Set.empty, Set("/management"), 32)
 
   class Request(r: HttpServletRequest) {
     lazy val servletPath = Option(r.getServletPath) getOrElse ""
