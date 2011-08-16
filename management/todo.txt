@@ -1,6 +1,0 @@
-
-Re-implement:
-
-management-log4j
-and implment management-logback
-

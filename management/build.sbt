@@ -1,9 +1,10 @@
 
-libraryDependencies += "org.slf4j" % "slf4j-api" % "1.6.1"
+libraryDependencies ++= Seq(
+    "org.slf4j" % "slf4j-api" % "1.6.1",
+    "javax.servlet" % "servlet-api" % "2.4" % "provided",
+    "org.specs2" %% "specs2" % "1.5" % "test"
+)
 
-libraryDependencies += "javax.servlet" % "servlet-api" % "2.4" % "provided"
-
-libraryDependencies += "org.specs2" %% "specs2" % "1.5" % "test"
-
+// needed for specs2
 resolvers += ScalaToolsSnapshots
 
