@@ -8,3 +8,6 @@ libraryDependencies ++= Seq(
 // needed for specs2
 resolvers += ScalaToolsSnapshots
 
+// disable publishing the main javadoc jar
+publishArtifact in (Compile, packageDoc) := false
+
