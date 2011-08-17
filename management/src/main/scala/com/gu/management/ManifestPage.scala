@@ -17,20 +17,9 @@ class ManifestPage extends ManagementPage {
 
 object Manifest {
 
-  val asStreamOpt = Option(getClass.getResourceAsStream("/version.txt")).map(Source.fromInputStream(_))
-  val asStringOpt = asStreamOpt.map(_.mkString)
-  val asList = asStringOpt match {
-    case Some(manifest) => {
-      manifest.split("\n").toList
-    }
-    case _ => List(): List[String]
-  }
-
-  lazy val asKeyValuePairs = {
-    asList.map(line => {
-      val tokens = line.split(":")
-      (tokens(0).trim, tokens(1).trim)
-    }).toMap
-  }
+  lazy val asStreamOpt = Option(getClass.getResourceAsStream("/version.txt")).map(Source.fromInputStream(_))
+  lazy val asStringOpt = asStreamOpt.map(_.mkString)
+  lazy val asList = asStringOpt map { _.split("\n").toList } getOrElse Nil
+  lazy val asKeyValuePairs = (asList map { _.split(":") } collect { case Array(k, v) => k -> v}).toMap
 
 }
