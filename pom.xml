@@ -13,7 +13,7 @@
     <parent>
         <artifactId>guardian-parent</artifactId>
         <groupId>com.gu</groupId>
-        <version>2.0</version>
+        <version>1.0</version>
     </parent>
 
     <modules>
