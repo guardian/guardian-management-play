@@ -80,12 +80,9 @@
     </dependencies>
     
     <scm>
-        <connection>
-            scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/trunk/management
-        </connection>
-        <developerConnection>
-            scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/trunk/management
-        </developerConnection>
+        <connection>scm:git:http://github.com/guardian/guardian-management.git</connection>
+        <developerConnection>scm:git:git://git@github.com/guardian/guardian-management.git</developerConnection>
+        <url>http://github.com/guardian/guardian-management</url>
     </scm>
 
 </project>
