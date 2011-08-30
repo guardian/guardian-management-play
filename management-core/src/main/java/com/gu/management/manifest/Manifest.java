@@ -8,7 +8,7 @@ public class Manifest {
 
 	private static final Logger LOGGER = Logger.getLogger(Manifest.class);
 
-	private Long revisionNumber;
+	private String revisionNumber;
 	private String absolutePath;
 	private String manifestString;
 	private String manifestFilePath = "META-INF/MANIFEST.MF";
@@ -23,7 +23,7 @@ public class Manifest {
         reload();
     }
 
-    public Long getRevisionNumber() {
+    public String getRevisionNumber() {
         return revisionNumber;
     }
 
@@ -41,12 +41,7 @@ public class Manifest {
 	}
 
     private void parseRevisionNumber(String line) {
-		try {
-			revisionNumber = Long.parseLong(getValue(line));
-		} catch(NumberFormatException e) {
-			LOGGER.info("Could not parse revision number from '" + line + "'; using 0 instead");
-            revisionNumber = 0L;
-		}
+			revisionNumber = getValue(line);
 	}
 
     @Override
@@ -61,7 +56,7 @@ public class Manifest {
 			parseManifest(file);
 		} else {
 			manifestString = String.format("Manifest file not found: '%s", fileProvider.getAbsolutePath(manifestFilePath)) + "'";
-			revisionNumber = System.currentTimeMillis();
+			revisionNumber = String.valueOf(System.currentTimeMillis());
 			LOGGER.debug("Manfest not found generating random revision number : "+revisionNumber);
 		}
 	}
