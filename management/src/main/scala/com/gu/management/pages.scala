@@ -2,6 +2,7 @@ package com.gu.management
 
 import javax.servlet.http.HttpServletRequest
 import xml.NodeSeq
+import net.liftweb.json.Extraction
 
 object ServletRequestMatchers {
   object Path {
@@ -44,6 +45,13 @@ abstract class ManagementPage {
   def linktext = path
 }
 
+trait JsonManagementPage extends ManagementPage {
+  implicit val formats = net.liftweb.json.DefaultFormats
+
+  def get(req: HttpServletRequest) = JsonResponse(Extraction.decompose(jsonObj))
+
+  def jsonObj: Any
+}
 
 /**
  * Mixin this trait if you want to support posting to your management page

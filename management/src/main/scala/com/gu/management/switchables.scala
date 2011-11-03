@@ -94,7 +94,7 @@ class Switchboard(switches: Seq[Switchable]) extends HtmlManagementPage with Pos
       Option(r.getParameter(switch.name)) match {
         case Some("ON") => switch.switchOn()
         case Some("OFF") => switch.switchOff()
-        case Some(other) => error("Expected ON or OFF as value for " + switch.name + " parameter")
+        case Some(other) => sys.error("Expected ON or OFF as value for " + switch.name + " parameter")
         case _ => // ignore
       }
     }

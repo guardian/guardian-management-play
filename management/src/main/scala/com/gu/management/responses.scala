@@ -1,5 +1,6 @@
 package com.gu.management
 
+import net.liftweb.json._
 import javax.servlet.http.HttpServletResponse
 import xml.Elem
 
@@ -51,5 +52,13 @@ case class RedirectResponse(to: String) extends Response {
   def writeTo(resp: HttpServletResponse) {
     resp.setHeader("Location", to)
     resp.setStatus(302)
+  }
+}
+
+case class JsonResponse(response: JValue) extends Response {
+  def writeTo(resp: HttpServletResponse) {
+    resp.setCharacterEncoding("UTF-8")
+    resp.setContentType("application/json")
+    resp.getWriter.println(pretty(render(response)))
   }
 }

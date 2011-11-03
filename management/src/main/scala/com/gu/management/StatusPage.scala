@@ -14,3 +14,8 @@ class StatusPage(metrics: Seq[Metric]) extends ManagementPage {
       {metrics map {_.toXml}}
     </status>)
 }
+
+class JsonStatusPage(metrics: List[GangliaMetric]) extends JsonManagementPage {
+  val path = "/management/status.json"
+  def jsonObj = StatusResponseJson(metrics = metrics.map(_.asJson))
+}
