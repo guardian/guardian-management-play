@@ -5,11 +5,11 @@ import management.ManagementFactory
 import collection.JavaConversions._
 
 
-object JvmGangliaMetrics {
+object JvmMetrics {
   lazy val all = List(numThreads, totalThreads) ::: gcRates
 
-  lazy val numThreads = new GangliaMetric {
-    def asJson = StatusMetricJson(
+  lazy val numThreads = new Metric {
+    def asJson = StatusMetric(
       group = "jvm",
       name = "num_threads",
       `type` = "guage",
@@ -19,8 +19,8 @@ object JvmGangliaMetrics {
     )
   }
 
-  lazy val totalThreads = new GangliaMetric {
-    def asJson = StatusMetricJson(
+  lazy val totalThreads = new Metric {
+    def asJson = StatusMetric(
       group = "jvm",
       name = "total_threads",
       `type` = "counter",
@@ -31,8 +31,8 @@ object JvmGangliaMetrics {
   }
 
   lazy val gcRates = ManagementFactory.getGarbageCollectorMXBeans.toList map { gc =>
-    new GangliaMetric {
-      def asJson = StatusMetricJson(
+    new Metric {
+      def asJson = StatusMetric(
         group = "jvm",
         name = "gc_" + gc.getName.toLowerCase.replace(' ', '_'),
         `type` = "timer",

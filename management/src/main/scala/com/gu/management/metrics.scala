@@ -2,13 +2,37 @@ package com.gu.management
 
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.Callable
-import xml.Elem
+import java.util.Date
 
-object TimingMetric {
-  val empty = new TimingMetric("Empty")
+abstract class Metric()  {
+  def asJson: StatusMetric
 }
 
-class TimingMetric(statusElementName: String) extends Metric(statusElementName) {
+object TimingMetric {
+  val empty = new TimingMetric("Empty","Empty","Empty")
+}
+
+class CountMetric(name: String, title: String, description: String) extends Metric {
+  private val _count = new AtomicLong()
+
+  def recordCount(count: Int) {
+     _count.addAndGet(count)
+  }
+
+  def count = _count.get
+
+ def asJson = StatusMetric(
+    name = name,
+    `type` = "counter",
+    title = title,
+    description = description,
+    count = Some(count.toString)
+  )
+}
+
+class TimingMetric(name: String, title: String, description: String ) extends Metric() {
+  def this(name: String) = this(name,name,name)
+
   private val _totalTimeInMillis = new AtomicLong()
   private val _count = new AtomicLong()
 
@@ -17,10 +41,14 @@ class TimingMetric(statusElementName: String) extends Metric(statusElementName) 
     _count.incrementAndGet
   }
 
-  protected def genericXml = <prefix>
-    <count>{_count.get}</count>
-    <totalTimeInMillis>{_totalTimeInMillis.get}</totalTimeInMillis>
-  </prefix>
+  def asJson = StatusMetric(
+    name = name,
+    `type` = "timer",
+    title = title,
+    description = description,
+    count = Some(count.toString),
+    totalTime = Some(totalTimeInMillis.toString)
+  )
 
   def totalTimeInMillis = _totalTimeInMillis.get
   def count = _count.get
@@ -45,21 +73,45 @@ class TimingMetric(statusElementName: String) extends Metric(statusElementName) 
   def run(r: Runnable) = measure { r.run() }
 }
 
-class CountMetric(statusElementName: String) extends Metric(statusElementName) {
-  private val _count = new AtomicLong()
+case class StatusMetric(
+  // this should always be set to either "application" or "jvm"
+  group: String = "application",
+  name: String,
+  `type`: String,
+  // a short (<40 chars) title for this metric
+  title: String,
+  // an as-long-as-you-like description of what this metric means
+  // (used, e.g. on mouse over)
+  description: String,
+  // NB: these are deliberately strings - some json parsers have issues
+  // with big numbers, see https://dev.twitter.com/docs/twitter-ids-json-and-snowflake
+  value: Option[String] = None,
+  count: Option[String] = None,
+  totalTime: Option[String] = None,
+  units: Option[String] = None)
 
-  def recordCount(count: Int) {
-     _count.addAndGet(count)
-  }
+case class StatusResponseJson(
+ application: String,
+ time: Long = new Date().getTime,
+ metrics: Seq[StatusMetric] = Nil
+)
 
-  def count = _count.get
 
-  // This format without count wrapping the value is inconsistent with TimingMetric, but maintains compatibility with 3.x
-  protected def genericXml = <prefix>{_count.get}</prefix>
-}
 
-abstract class Metric(statusElementName: String)  {
-  protected def genericXml: Elem
-  def toXml = genericXml.copy(label = statusElementName)
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
