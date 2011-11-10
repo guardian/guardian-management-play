@@ -28,11 +28,15 @@ Going from CACTI to GANAGLIA
 There is a subtle change when you use the ganaglia (5.x) version of guardian management.
 
 (1) When you intialise your StatusPage object, you need to name it as being the status page of your app: 
+
 	new StatusPage("My App Name", Metrics.....)
 
 (2) When you create a metric, the existing signature is supported: 
+
 	new TimingMetic("the-thing-i-want-to-measure") 
+
 however it is advised that you supply 2 extra params. As follows
+
 	new TimingMetric("name", "title", "description")
 
 Getting Started
