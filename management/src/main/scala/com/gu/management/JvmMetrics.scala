@@ -12,7 +12,7 @@ object JvmMetrics {
     def asJson = StatusMetric(
       group = "jvm",
       name = "num_threads",
-      `type` = "guage",
+      `type` = "gauge",
       title = "Number of active threads",
       description = "Number of threads currently active as reported by the jvm",
       value = Some(ManagementFactory.getThreadMXBean.getThreadCount.toString)

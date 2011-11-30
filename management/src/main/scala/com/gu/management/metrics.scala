@@ -3,16 +3,17 @@ package com.gu.management
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.Callable
 import java.util.Date
+import java.security.acl.Group
 
 abstract class Metric()  {
   def asJson: StatusMetric
 }
 
 object TimingMetric {
-  val empty = new TimingMetric("Empty","Empty","Empty")
+  val empty = new TimingMetric("application", "Empty","Empty","Empty")
 }
 
-class CountMetric(name: String, title: String, description: String) extends Metric {
+class GaugeMetric(group: String, name: String, title: String, description: String) extends Metric {
   private val _count = new AtomicLong()
 
   def recordCount(count: Int) {
@@ -22,6 +23,26 @@ class CountMetric(name: String, title: String, description: String) extends Metr
   def count = _count.get
 
  def asJson = StatusMetric(
+    group = group,
+    name = name,
+    `type` = "gauge",
+    title = title,
+    description = description,
+    value = Some(count.toString)
+  )
+}
+
+class CountMetric(group: String, name: String, title: String, description: String) extends Metric {
+  private val _count = new AtomicLong()
+
+  def recordCount(count: Int) {
+     _count.addAndGet(count)
+  }
+
+  def count = _count.get
+
+ def asJson = StatusMetric(
+    group = group,
     name = name,
     `type` = "counter",
     title = title,
@@ -30,8 +51,7 @@ class CountMetric(name: String, title: String, description: String) extends Metr
   )
 }
 
-class TimingMetric(name: String, title: String, description: String ) extends Metric() {
-  def this(name: String) = this(name,name,name)
+class TimingMetric(group: String, name: String, title: String, description: String ) extends Metric() {
 
   private val _totalTimeInMillis = new AtomicLong()
   private val _count = new AtomicLong()
@@ -42,6 +62,7 @@ class TimingMetric(name: String, title: String, description: String ) extends Me
   }
 
   def asJson = StatusMetric(
+    group = group,
     name = name,
     `type` = "timer",
     title = title,
