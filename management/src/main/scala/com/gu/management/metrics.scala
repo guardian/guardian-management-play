@@ -12,7 +12,7 @@ object TimingMetric {
   val empty = new TimingMetric("application", "Empty","Empty","Empty")
 }
 
-case class GaugeMetric(group: String, name: String, title: String, description: String) extends Metric {
+case class GaugeMetric(group: String, name: String, title: String, description: String, master: String = "none") extends Metric {
   private val _count = new AtomicLong()
 
   def recordCount(count: Int) {
@@ -23,6 +23,7 @@ case class GaugeMetric(group: String, name: String, title: String, description: 
 
  def asJson = StatusMetric(
     group = group,
+    master = master,
     name = name,
     `type` = "gauge",
     title = title,
@@ -31,7 +32,7 @@ case class GaugeMetric(group: String, name: String, title: String, description: 
   )
 }
 
-case class CountMetric(group: String, name: String, title: String, description: String) extends Metric {
+case class CountMetric(group: String, name: String, title: String, description: String, master: String = "none") extends Metric {
   private val _count = new AtomicLong()
 
   def recordCount(count: Int) {
@@ -42,6 +43,7 @@ case class CountMetric(group: String, name: String, title: String, description: 
 
  def asJson = StatusMetric(
     group = group,
+    master = master,
     name = name,
     `type` = "counter",
     title = title,
@@ -50,7 +52,7 @@ case class CountMetric(group: String, name: String, title: String, description: 
   )
 }
 
-case class TimingMetric(group: String, name: String, title: String, description: String ) extends Metric() {
+case class TimingMetric(group: String, name: String, title: String, description: String, master: String = "none" ) extends Metric() {
 
   private val _totalTimeInMillis = new AtomicLong()
   private val _count = new AtomicLong()
@@ -62,6 +64,7 @@ case class TimingMetric(group: String, name: String, title: String, description:
 
   def asJson = StatusMetric(
     group = group,
+    master = master,
     name = name,
     `type` = "timer",
     title = title,
@@ -94,8 +97,9 @@ case class TimingMetric(group: String, name: String, title: String, description:
 }
 
 case class StatusMetric(
-  // this should always be set to either "application" or "jvm"
   group: String = "application",
+  master: String = "none",
+  // name should be brief and underscored not camel case
   name: String,
   `type`: String,
   // a short (<40 chars) title for this metric
