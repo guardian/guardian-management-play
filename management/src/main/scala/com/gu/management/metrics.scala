@@ -3,7 +3,6 @@ package com.gu.management
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.Callable
 import java.util.Date
-import java.security.acl.Group
 
 abstract class Metric()  {
   def asJson: StatusMetric
@@ -13,7 +12,7 @@ object TimingMetric {
   val empty = new TimingMetric("application", "Empty","Empty","Empty")
 }
 
-class GaugeMetric(group: String, name: String, title: String, description: String) extends Metric {
+case class GaugeMetric(group: String, name: String, title: String, description: String) extends Metric {
   private val _count = new AtomicLong()
 
   def recordCount(count: Int) {
@@ -32,7 +31,7 @@ class GaugeMetric(group: String, name: String, title: String, description: Strin
   )
 }
 
-class CountMetric(group: String, name: String, title: String, description: String) extends Metric {
+case class CountMetric(group: String, name: String, title: String, description: String) extends Metric {
   private val _count = new AtomicLong()
 
   def recordCount(count: Int) {
@@ -51,7 +50,7 @@ class CountMetric(group: String, name: String, title: String, description: Strin
   )
 }
 
-class TimingMetric(group: String, name: String, title: String, description: String ) extends Metric() {
+case class TimingMetric(group: String, name: String, title: String, description: String ) extends Metric() {
 
   private val _totalTimeInMillis = new AtomicLong()
   private val _count = new AtomicLong()
