@@ -20,8 +20,8 @@ object Switches {
 
 // timing stuff
 object TimingMetrics {
-  val downtime = new TimingMetric("downtime", "downtime","Amount of downtime")
-  val requests = new TimingMetric("requests", "requests", "Number of requests recieved")
+  val downtime = new TimingMetric("example", "downtime", "downtime","Amount of downtime")
+  val requests = new TimingMetric("example","requests", "requests", "Number of requests recieved")
 
   val all = downtime :: requests :: Nil
 }
