@@ -1,7 +1,7 @@
 import sbt._
 
 object ManagementBuild extends Build {
-  lazy val root = Project("root", file(".")) aggregate(management, managementLogback, example)
+  lazy val root = Project("root", file(".")) aggregate(management, managementLogback, managementMongo, example)
 
   lazy val management = managementProject("management")
 
@@ -9,7 +9,7 @@ object ManagementBuild extends Build {
 
   lazy val example = managementProject("example") dependsOn (management, managementLogback)
 
-
+  lazy val managementMongo = managementProject("management-mongo") dependsOn  (management)
 
   def managementProject(name: String) = Project(name, file(name))
 }
