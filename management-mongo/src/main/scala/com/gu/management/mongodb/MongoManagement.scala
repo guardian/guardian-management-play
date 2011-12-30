@@ -16,9 +16,9 @@ trait MongoManagement extends Loggable {
       //just implementing the DBConnector
       val connectorField = classOf[com.mongodb.Mongo].getDeclaredField("_connector")
 
-      val modifiersField = classOf[Field].getDeclaredField("modifiers");
-      modifiersField.setAccessible(true);
-      modifiersField.setInt(connectorField, connectorField.getModifiers() & ~Modifier.FINAL);
+      val modifiersField = classOf[Field].getDeclaredField("modifiers")
+      modifiersField.setAccessible(true)
+      modifiersField.setInt(connectorField, connectorField.getModifiers() & ~Modifier.FINAL)
 
       connectorField.setAccessible(true)
       connectorField.set(
