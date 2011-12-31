@@ -18,7 +18,7 @@ class ServerErrorResponseCaptureFilter extends ResponseCodeCaptureFilter(ServerE
 
 class ClientErrorResponseCaptureFilter extends ResponseCodeCaptureFilter(ClientErrorCounter, StatusCodeChecker.clientError)
 
-class ResponseCodeCaptureFilter(metric: CountMetric, shouldCount: Int => Boolean) extends AbstractHttpFilter with Loggable {
+class ResponseCodeCaptureFilter(metric: CountMetric, shouldCount: Int => Boolean, shouldLog: Boolean = true) extends AbstractHttpFilter with Loggable {
 
   def doHttpFilter(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
 
@@ -27,6 +27,11 @@ class ResponseCodeCaptureFilter(metric: CountMetric, shouldCount: Int => Boolean
 
       override def setStatus(status: Int): Unit = {
         super.setStatus(status)
+        statusCode = Some(status)
+      }
+      
+      override def setStatus(status: Int, message: String): Unit = {
+        super.setStatus(status, message)
         statusCode = Some(status)
       }
 
@@ -41,7 +46,7 @@ class ResponseCodeCaptureFilter(metric: CountMetric, shouldCount: Int => Boolean
 
     wrappedResponse.statusCode match {
       case Some(statusCode) if(shouldCount(statusCode)) => metric.recordCount(1)
-      case None => logger.warn("No status code set by application, unable to determine if metric should be updated")
+      case None if (shouldLog)=> logger.warn("No status code set by application, unable to determine if metric should be updated")
       case _ =>
     }
 
