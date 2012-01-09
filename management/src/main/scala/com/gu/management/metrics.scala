@@ -12,7 +12,7 @@ object TimingMetric {
   val empty = new TimingMetric("application", "Empty","Empty","Empty")
 }
 
-case class GaugeMetric(group: String, name: String, title: String, description: String, master: String = "none") extends Metric {
+case class GaugeMetric(group: String, name: String, title: String, description: String, master: Option[String] = None) extends Metric {
   private val _count = new AtomicLong()
 
   def recordCount(count: Int) {
@@ -32,7 +32,7 @@ case class GaugeMetric(group: String, name: String, title: String, description: 
   )
 }
 
-case class CountMetric(group: String, name: String, title: String, description: String, master: String = "none") extends Metric {
+case class CountMetric(group: String, name: String, title: String, description: String, master: Option[String] = None) extends Metric {
   private val _count = new AtomicLong()
 
   def recordCount(count: Int) {
@@ -52,7 +52,7 @@ case class CountMetric(group: String, name: String, title: String, description: 
   )
 }
 
-case class TimingMetric(group: String, name: String, title: String, description: String, master: String = "none" ) extends Metric() {
+case class TimingMetric(group: String, name: String, title: String, description: String, master: Option[String] = None ) extends Metric() {
 
   private val _totalTimeInMillis = new AtomicLong()
   private val _count = new AtomicLong()
@@ -98,7 +98,7 @@ case class TimingMetric(group: String, name: String, title: String, description:
 
 case class StatusMetric(
   group: String = "application",
-  master: String = "none",
+  master: Option[String] = None,
   // name should be brief and underscored not camel case
   name: String,
   `type`: String,
