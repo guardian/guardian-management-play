@@ -6,12 +6,17 @@ import collection.JavaConversions._
 
 
 object JvmMetrics {
+
   lazy val all = List(numThreads, totalThreads) ::: gcRates
 
   lazy val numThreads = new Metric {
+
+    val group = "jvm"
+    val name = "num_threads"
+
     def asJson = StatusMetric(
-      group = "jvm",
-      name = "num_threads",
+      group = group,
+      name = name,
       `type` = "gauge",
       title = "Number of active threads",
       description = "Number of threads currently active as reported by the jvm",
@@ -20,9 +25,12 @@ object JvmMetrics {
   }
 
   lazy val totalThreads = new Metric {
+    val group = "jvm"
+    val name = "total_threads"
+
     def asJson = StatusMetric(
-      group = "jvm",
-      name = "total_threads",
+      group = group,
+      name = name,
       `type` = "counter",
       title = "Total started threads",
       description = "Threads started since the application started as reported by the jvm",
@@ -32,9 +40,12 @@ object JvmMetrics {
 
   lazy val gcRates = ManagementFactory.getGarbageCollectorMXBeans.toList map { gc =>
     new Metric {
+      val group = "jvm"
+      val name = "gc_" + gc.getName.toLowerCase.replace(' ', '_')
+
       def asJson = StatusMetric(
-        group = "jvm",
-        name = "gc_" + gc.getName.toLowerCase.replace(' ', '_'),
+        group = group,
+        name = name,
         `type` = "timer",
         title = "GC " + gc.getName,
         description = "Collection rates for the " + gc.getName + " garbage collector",

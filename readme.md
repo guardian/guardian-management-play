@@ -59,9 +59,9 @@ So in scala:
 
 `object SuccessfulEmails extends CountMetric("emails", "sent", "Emails Sent", "Number of emails sent")`
 
-The fifth metric is the field master. This takes Option[String] with a default of None.
+The fifth metric is the field master. This takes Option[Metric] with a default of None.
 This is used to indicate that the metric you are creating is a child of a
-another metric. The value if the "name" of the metric you wish to be a child of.
+another metric. The parameter is the metric you wish to be a child of
 
 For example. Imagine there is a time taken for a request metric:
 
@@ -69,11 +69,11 @@ For example. Imagine there is a time taken for a request metric:
 
 You may have a mongoDB requests metric, which is a child of the overall HTTP request:
 
-`object MongoRequests extends TimingMetric("requests", "mongodb", "Mongodb Requests", "Mongo request timer", Some("api"))`
+`object MongoRequests extends TimingMetric("requests", "mongodb", "Mongodb Requests", "Mongo request timer", Some(Requests))`
 
 This allows Ganglia to give the proportion of time of the HTTP request taken talking to mongo. You could have another:
 
-`object MongoRequests extends TimingMetric("requests", "oracle", "Oracle Requests", "Oracle request timer", Some("api"))`
+`object MongoRequests extends TimingMetric("requests", "oracle", "Oracle Requests", "Oracle request timer", Some(Requests))`
 
 Ganglia would now be able to show you propertions of each DB request as a proportion of total HTTP time.
 
