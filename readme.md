@@ -42,11 +42,11 @@ You need to provide four arguments, with an optional fifth.
 
 `new TimingMetic("group", "name", "title", "description")`
 
-`GROUP:` this is used as a logical grouping. Think of it as a noun. For example "emails"
-NAME:` This is a verb related to the noun defined in group. For example "sent"
-`TITLE:` This is a text string used to title the graphs. Keep it short. For example "Emails Sent"
-`DESCRIPTION:` This is a longer description of the metric. Used on the hover over.
-For example "Total number of emails sent"
+    GROUP: this is used as a logical grouping. Think of it as a noun. For example "emails"
+    NAME: This is a verb related to the noun defined in group. For example "sent"
+    TITLE: This is a text string used to title the graphs. Keep it short. For example "Emails Sent"
+    DESCRIPTION: This is a longer description of the metric. Used on the hover over.
+    For example "Total number of emails sent"
 
 Group and Name are munged together in ganglia to give the actual name used on the console.
 There is another console in Graphite (graphing tool) which will allow subdivision on group.
