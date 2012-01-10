@@ -25,19 +25,68 @@ There is no intention to maintain these further.
 
 Going from CACTI to GANAGLIA
 =====================
-There is a subtle change when you use the ganaglia (5.x) version of guardian management.
+There is a major, breaking, change when you use the ganglia (5.x) version of guardian management.
 
-(1) When you intialise your StatusPage object, you need to name it as being the status page of your app: 
+(1) When you initialise your StatusPage object, you need to name it as being the status page of your app:
 
 	new StatusPage("My App Name", Metrics.....)
 
-(2) When you create a metric, the existing signature is supported: 
+	So for example identity has 2 status pages:
 
-	new TimingMetic("the-thing-i-want-to-measure") 
+	new StatusPage("identity-webapp", Metrics.....)
+	new StatusPage("identity-api", Metrics.....)
 
-however it is advised that you supply 2 extra params. As follows
+(2) When you create a metric, the existing signature is NOT supported:
 
-	new TimingMetric("name", "title", "description")
+	WILL NOT WORK: new TimingMetic("the-thing-i-want-to-measure")
+
+    You need to provide four arguments, with an optional fifth.
+
+    new TimingMetic("group", "name", "title", "description")
+
+    GROUP: this is used as a logical grouping. Think of it as a noun. For example "emails"
+    NAME: This is a verb related to the noun defined in group. For example "sent"
+    TITLE: This is a text string used to title the graphs. Keep it short. For example "Emails Sent"
+    DESCRIPTION: This is a longer description of the metric. Used on the hover over. For example "Total number of emails sent"
+
+    Group and Name are munged together in ganglia to give the actual name used on the console. There is another console in Graphite (graphing tool) which will allow subdivision on group.
+    Allowing you to see all the "emails" metrics and to create mash ups of all of these. Using the groups as it's top level option.
+
+    As a rule use underscores (_) not hyphens (-) as delimiters.
+
+    So in scala:
+
+    object SuccessfulEmails extends CountMetric("emails", "sent", "Emails Sent", "Number of emails sent")
+
+    The fifth metric is the field master. This takes Option[String] with a default of None. This is used to indicate that the metric you are creating is a child of a
+    another metric. The value if the "name" of the metric you wish to be a child of.
+
+    For example. Imagine there is a time taken for a request metric:
+
+    object Requests extends TimingMetric("requests", "api", "Api Requests Timer", "Total number and time taken for API request")
+
+    You may have a mongoDB requests metric, which is a child of the overall HTTP request:
+
+    object MongoRequests extends TimingMetric("requests", "mongodb", "Mongodb Requests", "Mongo request timer", Some("api"))
+
+    This allows Ganglia to give the proportion of time of the HTTP request taken talking to mongo. You could have another:
+
+    object MongoRequests extends TimingMetric("requests", "oracle", "Oracle Requests", "Oracle request timer", Some("api"))
+
+    Ganglia would now be able to show you propertions of each DB request as a proportion of total HTTP time.
+
+
+(3) Types of metric
+
+    - Timing: standard timing metric, takes number of events over a time period.
+    - Count: Constantly incrementing counter.
+    - Gauge: Count at a particular point in time.
+
+(4) Extra docs:
+
+    See guardian google docs for "Web Applications Specifications"
+
+
 
 Getting Started
 ===============
