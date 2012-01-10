@@ -23,7 +23,7 @@ The old management libraries, that were web-framework specific, can be found in
 the [3.x](https://github.com/guardian/guardian-management/tree/3.x) branch of this project.
 There is no intention to maintain these further.
 
-Going from CACTI to GANAGLIA
+Going from CACTI to GANGLIA
 =====================
 There is a major, breaking, change when you use the ganglia (5.x) version of guardian management.
 
