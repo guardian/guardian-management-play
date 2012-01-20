@@ -3,10 +3,10 @@ package com.gu.management.request
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import com.gu.management.{StopWatch, TimingMetric, AbstractHttpFilter}
 import collection.JavaConverters._
 import java.net.URLEncoder
 import org.slf4j.LoggerFactory
+import com.gu.management._
 
 /*
  * If you want to change the behaviour of this class, derive a version
@@ -17,10 +17,14 @@ class RequestLoggingFilter(
     shouldLogParametersOnNonGetRequests: Boolean = false,
     parametersToSuppressInLogs: Set[String] = Set.empty,
     pathPrefixesToLogAtTrace: Set[String] = Set("/management"),
-    maximumSizeForPostParameters: Int = 32
+    maximumSizeForPostParameters: Int = 32,
+    logRequestBodySwitch: Switch = LogRequestBodySwitch,
+    maxRequstBodyLength: Int = 1024
     ) extends AbstractHttpFilter {
 
   protected lazy val logger = LoggerFactory.getLogger(getClass)
+
+  protected lazy val restrictedParamsRegexp = parametersToSuppressInLogs.mkString("(?:", ")|(?:", ")").r
 
   // Default constructor for use in web.xml as opposed to dependency injection frameworks
   def this() = this(HttpRequestsTimingMetric, false, Set.empty, Set("/management"), 32)
@@ -58,13 +62,31 @@ class RequestLoggingFilter(
         other
     }
 
+    lazy val requestBody = {
+      try {
+        (r match {
+          case request: BodyCachingRequestWrapper =>
+            val bodyAsString = new String(request.cachedBody, request.characterEncoding)
+            if(restrictedParamsRegexp.findFirstIn(bodyAsString).isDefined ) "<<restricted>>" else bodyAsString
+          case _ => "<<wont display>>"
+        }).take(maxRequstBodyLength)
+      } catch {
+        case e =>
+          logger.trace("Failed to display request body", e)
+          "<<binary>>"
+      }
+    }
+    
     lazy val shouldLog = ! (pathPrefixesToLogAtTrace exists { fullPath.startsWith })
   }
 
   def doHttpFilter(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
-    val req = new Request(request)
+    val logPostData = logRequestBodySwitch.isSwitchedOn && List("POST", "PUT").contains(request.getMethod)
+    val wrappedRequest = if(logPostData) BodyCachingRequestWrapper(request) else request
 
-    val activity = req.method + " " + req.fullPath + req.loggableParamString
+    val req = new Request(wrappedRequest)
+
+    val activity = req.method + " " + req.fullPath + req.loggableParamString + ( if(logPostData) " " + req.requestBody else "" )
 
     if (req.shouldLog)
       logger.trace(activity)
@@ -74,7 +96,7 @@ class RequestLoggingFilter(
       val (key, value) = AppServerHeader()
       response.setHeader(key, value)
 
-      chain.doFilter(request, response)
+      chain.doFilter(wrappedRequest, response)
 
       if (req.shouldLog) {
         logger.info(activity + " completed in " + stopWatch.elapsed + " ms")
@@ -89,3 +111,5 @@ class RequestLoggingFilter(
 
 }
 
+
+object LogRequestBodySwitch extends DefaultSwitch("log-post-data", "Switches request body logging by the request logging filter", false)
