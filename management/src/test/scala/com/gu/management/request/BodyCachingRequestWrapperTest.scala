@@ -26,7 +26,7 @@ class BodyCachingRequestWrapperTest extends Specification {
     //in theory this should exclude the parameters from the body as the body is read before getParams is called
     //however this may vary between container implementations
     "merge params from wrapped request" in {
-      val wrapper = new BodyCachingRequestWrapper(new MockHttpServletRequest("/foo") {
+      val wrapper = BodyCachingRequestWrapper(new MockHttpServletRequest("/foo") {
         override def getInputStream = new MockServletInputStream(
           new ByteArrayInputStream("key1=val1".getBytes("UTF-8"))
         )
@@ -47,7 +47,7 @@ class BodyCachingRequestWrapperTest extends Specification {
     }
 
     "not return parameters if content type is not application/x-www-form-urlencoded" in {
-      val wrapper = new BodyCachingRequestWrapper(new MockHttpServletRequest("/foo") {
+      val wrapper = BodyCachingRequestWrapper(new MockHttpServletRequest("/foo") {
         override def getInputStream = new MockServletInputStream(new ByteArrayInputStream("key1=val1".getBytes("UTF8")))
 
         charEncoding = "UTF-8"
@@ -72,7 +72,7 @@ class BodyCachingRequestWrapperTest extends Specification {
     }
 
     "get parameters from parsed response body for non UTF-8 encoding" in {
-      val wrapper = new BodyCachingRequestWrapper(new MockHttpServletRequest("/foo") {
+      val wrapper = BodyCachingRequestWrapper(new MockHttpServletRequest("/foo") {
         override def getInputStream = new MockServletInputStream(new ByteArrayInputStream(("key1=val1&key2=" + encode("विकास करने किएलोग स्वतंत्रता अत्यंत", "UTF-16")).getBytes("UTF-16")))
 
         contentType = "application/x-www-form-urlencoded"
@@ -95,7 +95,7 @@ class BodyCachingRequestWrapperTest extends Specification {
   }
 
   def createWrapperForBodyString(requestBody: String) = {
-    new BodyCachingRequestWrapper(new MockHttpServletRequest("/foo") {
+    BodyCachingRequestWrapper(new MockHttpServletRequest("/foo") {
       override def getInputStream = new MockServletInputStream(new ByteArrayInputStream(requestBody.getBytes("UTF-8")))
 
       charEncoding = "UTF-8"

@@ -4,10 +4,10 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletRequestWrapper }
 import scalax.io.Resource
 import scala.collection.JavaConversions._
 import java.io.ByteArrayInputStream
-import javax.servlet.ServletInputStream
 import java.net.URLDecoder._
+import javax.servlet.{ServletRequest, ServletInputStream}
 
-class BodyCachingRequestWrapper(wrappedRequest: HttpServletRequest) extends HttpServletRequestWrapper(wrappedRequest) {
+class BodyCachingRequestWrapper private (wrappedRequest: HttpServletRequest) extends HttpServletRequestWrapper(wrappedRequest) {
   val cachedBody = Resource.fromInputStream(wrappedRequest.getInputStream).bytes.toArray
 
   lazy val characterEncoding = Option(wrappedRequest.getCharacterEncoding).getOrElse("UTF-8")
@@ -76,6 +76,15 @@ class BodyCachingRequestWrapper(wrappedRequest: HttpServletRequest) extends Http
       override def mark(p1: Int) { inputStream.mark(p1) }
       override def reset() { inputStream.reset() }
       override def markSupported() = inputStream.markSupported()
+    }
+  }
+}
+
+object BodyCachingRequestWrapper {
+  def apply( request: HttpServletRequest ): BodyCachingRequestWrapper = {
+    request match {
+      case request: BodyCachingRequestWrapper => request
+      case request => new BodyCachingRequestWrapper(request)
     }
   }
 }
