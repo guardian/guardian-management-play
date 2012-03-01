@@ -1,11 +1,10 @@
 package com.gu.management.request
 
 import java.io.ByteArrayInputStream
-import net.liftweb.mocks.{MockHttpServletRequest, MockServletInputStream}
+import net.liftweb.mocks.{ MockHttpServletRequest, MockServletInputStream }
 import java.net.URLEncoder._
 import org.specs2.mutable.Specification
 import scala.collection.JavaConversions._
-
 
 class BodyCachingRequestWrapperTest extends Specification {
 
@@ -20,7 +19,7 @@ class BodyCachingRequestWrapperTest extends Specification {
     "get multiple parameters from parsed response body" in {
       val wrapper = createWrapperForBodyString("key1=val1&key1=" + encode("विकास करने किएलोग स्वतंत्रता अत्यंत", "UTF-8"))
 
-      wrapper.getParameterValues("key1") must equalTo(Array("val1","विकास करने किएलोग स्वतंत्रता अत्यंत"))
+      wrapper.getParameterValues("key1") must equalTo(Array("val1", "विकास करने किएलोग स्वतंत्रता अत्यंत"))
     }
 
     //in theory this should exclude the parameters from the body as the body is read before getParams is called
@@ -67,7 +66,7 @@ class BodyCachingRequestWrapperTest extends Specification {
       val wrapper = createWrapperForBodyString("key1=val1&key2=val2&key1=" + encode("विकास करने किएलोग स्वतंत्रता अत्यंत", "UTF-8"))
 
       wrapper.getParameterMap.size must equalTo(2)
-      wrapper.getParameterValues("key1") must equalTo(Array("val1","विकास करने किएलोग स्वतंत्रता अत्यंत"))
+      wrapper.getParameterValues("key1") must equalTo(Array("val1", "विकास करने किएलोग स्वतंत्रता अत्यंत"))
       wrapper.getParameterValues("key2") must equalTo(Array("val2"))
     }
 

@@ -1,7 +1,7 @@
 package com.gu.management.example
 
 import com.gu.management.Switch
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest, HttpServlet}
+import javax.servlet.http.{ HttpServletResponse, HttpServletRequest, HttpServlet }
 
 class ScalaApp extends HttpServlet {
   protected override def doPost(request: HttpServletRequest, response: HttpServletResponse) {

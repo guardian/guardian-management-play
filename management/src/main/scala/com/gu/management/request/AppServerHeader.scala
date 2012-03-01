@@ -1,6 +1,6 @@
 package com.gu.management.request
 
-import java.net.{UnknownHostException, InetAddress}
+import java.net.{ UnknownHostException, InetAddress }
 import io.Source
 import util.control.Exception._
 
@@ -18,7 +18,7 @@ trait AppServerHeader {
   lazy val hostHash = installVarsMap.get("HOST_HASH")
 
   private def installVarsMap =
-    (installVarsContent map { _.split("=") } collect { case Array(k, v) => k -> v}).toMap
+    (installVarsContent map { _.split("=") } collect { case Array(k, v) => k -> v }).toMap
 
   protected def installVarsContent = handling(classOf[Exception]) by (_ => Nil) apply {
     Source.fromFile("/etc/gu/install_vars").getLines().toList

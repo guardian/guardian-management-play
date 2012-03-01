@@ -1,8 +1,8 @@
 package com.gu.management.request
 
 import javax.servlet.FilterChain
-import javax.servlet.http.{HttpServletResponseWrapper, HttpServletResponse, HttpServletRequest}
-import com.gu.management.{Loggable, CountMetric, AbstractHttpFilter}
+import javax.servlet.http.{ HttpServletResponseWrapper, HttpServletResponse, HttpServletRequest }
+import com.gu.management.{ Loggable, CountMetric, AbstractHttpFilter }
 
 object StatusCodeChecker {
 
@@ -22,14 +22,14 @@ class ResponseCodeCaptureFilter(metric: CountMetric, shouldCount: Int => Boolean
 
   def doHttpFilter(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
 
-    val wrappedResponse = new HttpServletResponseWrapper(response){
+    val wrappedResponse = new HttpServletResponseWrapper(response) {
       var statusCode: Option[Int] = None
 
       override def setStatus(status: Int): Unit = {
         super.setStatus(status)
         statusCode = Some(status)
       }
-      
+
       override def setStatus(status: Int, message: String): Unit = {
         super.setStatus(status, message)
         statusCode = Some(status)
@@ -45,8 +45,8 @@ class ResponseCodeCaptureFilter(metric: CountMetric, shouldCount: Int => Boolean
     chain.doFilter(request, wrappedResponse)
 
     wrappedResponse.statusCode match {
-      case Some(statusCode) if(shouldCount(statusCode)) => metric.recordCount(1)
-      case None if (shouldLog)=> logger.warn("No status code set by application, unable to determine if metric should be updated")
+      case Some(statusCode) if (shouldCount(statusCode)) => metric.recordCount(1)
+      case None if (shouldLog) => logger.warn("No status code set by application, unable to determine if metric should be updated")
       case _ =>
     }
 

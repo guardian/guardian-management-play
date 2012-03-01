@@ -4,7 +4,6 @@ import management.ManagementFactory
 
 import collection.JavaConversions._
 
-
 object JvmMetrics {
 
   lazy val all = List(numThreads, totalThreads) ::: gcRates

@@ -21,16 +21,15 @@ object ServletRequestMatchers {
   }
 }
 
-
 abstract class ManagementPage {
   /**
-    * The path to this page. You should include the full
-    * servlet path including /management
-    */
+   * The path to this page. You should include the full
+   * servlet path including /management
+   */
   val path: String
 
   /**
-    * Process a get request to this page
+   * Process a get request to this page
    */
   def get(req: HttpServletRequest): Response
 
@@ -67,24 +66,19 @@ trait Postable extends ManagementPage {
   }
 }
 
-
 abstract class HtmlManagementPage extends ManagementPage {
   final def get(req: HttpServletRequest) = HtmlResponse(
-      <html xmlns="http://www.w3.org/1999/xhtml">
-        <head>
-          <title>{title}</title>
-        </head>
-        <body>
-          <h2>{title}</h2>
-          { body(req) }
-        </body>
-      </html>)
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>{ title }</title>
+      </head>
+      <body>
+        <h2>{ title }</h2>
+        { body(req) }
+      </body>
+    </html>)
 
   def title: String
   def body(r: HttpServletRequest): NodeSeq
 }
-
-
-
-
 

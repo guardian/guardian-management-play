@@ -20,8 +20,8 @@ object Switches {
 
 // timing stuff
 object TimingMetrics {
-  val downtime = new TimingMetric("example", "downtime", "downtime","Amount of downtime")
-  val requests = new TimingMetric("example","requests", "requests", "Number of requests recieved")
+  val downtime = new TimingMetric("example", "downtime", "downtime", "Amount of downtime")
+  val requests = new TimingMetric("example", "requests", "requests", "Number of requests recieved")
 
   val all = downtime :: requests :: Nil
 }
@@ -36,11 +36,11 @@ object Properties {
 class ScalaManagementFilter extends ManagementFilter {
   lazy val pages =
     new DummyPage() ::
-    new ManifestPage() ::
-    new Switchboard(Switches.all) ::
-    new StatusPage("Example", TimingMetrics.all) ::
-    new HealthcheckManagementPage() ::
-    new PropertiesPage(Properties.all) ::
-    new LogbackLevelPage() ::
-    Nil
+      new ManifestPage() ::
+      new Switchboard(Switches.all) ::
+      new StatusPage("Example", TimingMetrics.all) ::
+      new HealthcheckManagementPage() ::
+      new PropertiesPage(Properties.all) ::
+      new LogbackLevelPage() ::
+      Nil
 }

@@ -2,13 +2,13 @@ package com.gu.management.mongodb
 
 import com.mongodb.casbah.MongoConnection
 import scala.collection.JavaConversions._
-import java.lang.reflect.{Modifier, Field}
-import com.mongodb.{DBTCPConnector, TimingDBTCPConnector}
+import java.lang.reflect.{ Modifier, Field }
+import com.mongodb.{ DBTCPConnector, TimingDBTCPConnector }
 import com.gu.management.Loggable
 
 trait MongoManagement extends Loggable {
 
-    def wireInTimingMetric(connection: MongoConnection) {
+  def wireInTimingMetric(connection: MongoConnection) {
     try {
       //this code manages to wire in a timing metric into the mongodb client.
       //it uses reflection to wrap the DBTCPConnector (which is the object that handles the actual operations that

@@ -3,7 +3,6 @@ package com.gu.management
 import org.slf4j.Logger
 import java.util.concurrent.Callable
 
-
 class StopWatch {
   val startTime = System.currentTimeMillis
   def elapsed = System.currentTimeMillis - startTime
@@ -17,13 +16,11 @@ object Timing {
   def info[T](logger: Logger, activity: String, metric: TimingMetric = TimingMetric.empty)(block: => T): T =
     time(activity, logger.info, logger.info, metric)(block)
 
-
   def time[T](
-      activity: String,
-      onSuccess: (String) => Unit,
-      onFailure: (String, Throwable) => Unit,
-      metric: TimingMetric = TimingMetric.empty)
-      (block: => T): T = {
+    activity: String,
+    onSuccess: (String) => Unit,
+    onFailure: (String, Throwable) => Unit,
+    metric: TimingMetric = TimingMetric.empty)(block: => T): T = {
     val stopWatch = new StopWatch
     try {
       val result = block

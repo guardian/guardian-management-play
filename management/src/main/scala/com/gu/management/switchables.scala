@@ -37,7 +37,6 @@ trait Switchable extends Switch {
   def description: String
 }
 
-
 /**
  * A simple implementation of Switchable that does the right thing in most cases
  */
@@ -57,7 +56,6 @@ case class DefaultSwitch(name: String, description: String, initiallyOn: Boolean
   }
 }
 
-
 class Switchboard(switches: Seq[Switchable]) extends HtmlManagementPage with Postable {
   val title = "Switchboard"
   val path = "/management/switchboard"
@@ -76,18 +74,16 @@ class Switchboard(switches: Seq[Switchable]) extends HtmlManagementPage with Pos
 
   private def renderSwitch(s: Switchable) =
     <tr>
-      <td><a href={ "?switch=" + s.name }>{s.name}</a></td>
-      <td>{s.description}</td>
-      <td style="width: 100px; text-align: center;">{renderButtons(s)}</td>
+      <td><a href={ "?switch=" + s.name }>{ s.name }</a></td>
+      <td>{ s.description }</td>
+      <td style="width: 100px; text-align: center;">{ renderButtons(s) }</td>
     </tr>
-
 
   private def renderButtons(s: Switchable) =
     if (s.isSwitchedOn)
-      <xml:group><span style="color: ForestGreen"> ON </span><input type="submit" name={s.name} value="OFF"/></xml:group>
+      <xml:group><span style="color: ForestGreen"> ON </span><input type="submit" name={ s.name } value="OFF"/></xml:group>
     else
-      <xml:group><input type="submit" name={s.name} value="ON"/><span style="color: DarkRed"> OFF </span></xml:group>
-
+      <xml:group><input type="submit" name={ s.name } value="ON"/><span style="color: DarkRed"> OFF </span></xml:group>
 
   def post(r: HttpServletRequest) {
     for (switch <- switches) {

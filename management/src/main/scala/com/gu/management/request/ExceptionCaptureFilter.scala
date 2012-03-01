@@ -1,8 +1,8 @@
 package com.gu.management.request
 
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
 import javax.servlet.FilterChain
-import com.gu.management.{CountMetric, AbstractHttpFilter}
+import com.gu.management.{ CountMetric, AbstractHttpFilter }
 
 class ExceptionCaptureFilter(counterMetric: CountMetric = ExceptionCountMetric) extends AbstractHttpFilter {
 

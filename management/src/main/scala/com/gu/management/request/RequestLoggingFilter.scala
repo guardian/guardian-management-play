@@ -19,8 +19,7 @@ class RequestLoggingFilter(
     pathPrefixesToLogAtTrace: Set[String] = Set("/management"),
     maximumSizeForPostParameters: Int = 32,
     logRequestBodySwitch: Switch = LogRequestBodySwitch,
-    maxRequstBodyLength: Int = 1024
-    ) extends AbstractHttpFilter {
+    maxRequstBodyLength: Int = 1024) extends AbstractHttpFilter {
 
   protected lazy val logger = LoggerFactory.getLogger(getClass)
 
@@ -50,10 +49,10 @@ class RequestLoggingFilter(
 
     lazy val loggableParamString = loggableParams match {
       case Nil => ""
-      case l => l.map { case (k, v) => k + "=" + URLEncoder.encode(v, "UTF-8") } mkString("?", "&", "")
+      case l => l.map { case (k, v) => k + "=" + URLEncoder.encode(v, "UTF-8") } mkString ("?", "&", "")
     }
 
-    def filterParamForLogging(p: (String, String) ) = p match {
+    def filterParamForLogging(p: (String, String)) = p match {
       case (k, v) if (parametersToSuppressInLogs contains k) =>
         k -> "*****"
       case (k, v) if ("POST" == method && v.length > maximumSizeForPostParameters) =>
@@ -67,7 +66,7 @@ class RequestLoggingFilter(
         (r match {
           case request: BodyCachingRequestWrapper =>
             val bodyAsString = new String(request.cachedBody, request.characterEncoding)
-            if(restrictedParamsRegexp.findFirstIn(bodyAsString).isDefined ) "<<restricted>>" else bodyAsString
+            if (restrictedParamsRegexp.findFirstIn(bodyAsString).isDefined) "<<restricted>>" else bodyAsString
           case _ => "<<wont display>>"
         }).take(maxRequstBodyLength)
       } catch {
@@ -76,17 +75,17 @@ class RequestLoggingFilter(
           "<<binary>>"
       }
     }
-    
-    lazy val shouldLog = ! (pathPrefixesToLogAtTrace exists { fullPath.startsWith })
+
+    lazy val shouldLog = !(pathPrefixesToLogAtTrace exists { fullPath.startsWith })
   }
 
   def doHttpFilter(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
     val logPostData = logRequestBodySwitch.isSwitchedOn && List("POST", "PUT").contains(request.getMethod)
-    val wrappedRequest = if(logPostData) BodyCachingRequestWrapper(request) else request
+    val wrappedRequest = if (logPostData) BodyCachingRequestWrapper(request) else request
 
     val req = new Request(wrappedRequest)
 
-    val activity = req.method + " " + req.fullPath + req.loggableParamString + ( if(logPostData) " " + req.requestBody else "" )
+    val activity = req.method + " " + req.fullPath + req.loggableParamString + (if (logPostData) " " + req.requestBody else "")
 
     if (req.shouldLog)
       logger.trace(activity)
@@ -110,6 +109,5 @@ class RequestLoggingFilter(
   }
 
 }
-
 
 object LogRequestBodySwitch extends DefaultSwitch("log-post-data", "Switches request body logging by the request logging filter", false)

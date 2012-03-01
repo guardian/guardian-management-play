@@ -15,7 +15,6 @@ trait Response {
 
 }
 
-
 case class PlainTextResponse(text: String) extends Response {
   def writeTo(resp: HttpServletResponse) {
     resp.setCharacterEncoding("UTF-8")
@@ -23,7 +22,6 @@ case class PlainTextResponse(text: String) extends Response {
     resp.getWriter.println(text)
   }
 }
-
 
 case class HtmlResponse(response: Elem) extends Response {
   def writeTo(resp: HttpServletResponse) {
@@ -40,7 +38,6 @@ case class XmlResponse(response: Elem) extends Response {
     resp.getWriter.println(response.toString())
   }
 }
-
 
 case class ErrorResponse(code: Int, msg: String) extends Response {
   def writeTo(resp: HttpServletResponse) {

@@ -1,6 +1,6 @@
 package com.gu.management.request
 
-import com.gu.management.{CountMetric, TimingMetric}
+import com.gu.management.{ CountMetric, TimingMetric }
 
 object HttpRequestsTimingMetric extends TimingMetric(
   group = "application",

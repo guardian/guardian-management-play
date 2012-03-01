@@ -5,7 +5,7 @@ import scalax.io.Resource
 import scala.collection.JavaConversions._
 import java.io.ByteArrayInputStream
 import java.net.URLDecoder._
-import javax.servlet.{ServletRequest, ServletInputStream}
+import javax.servlet.{ ServletRequest, ServletInputStream }
 
 class BodyCachingRequestWrapper private (wrappedRequest: HttpServletRequest) extends HttpServletRequestWrapper(wrappedRequest) {
   val cachedBody = Resource.fromInputStream(wrappedRequest.getInputStream).bytes.toArray
@@ -21,7 +21,7 @@ class BodyCachingRequestWrapper private (wrappedRequest: HttpServletRequest) ext
   }
 
   lazy val formParams: Map[String, Array[String]] =
-    if( wrappedRequest getContentType() startsWith( "application/x-www-form-urlencoded" ) ) {
+    if (wrappedRequest getContentType () startsWith ("application/x-www-form-urlencoded")) {
       new String(cachedBody, characterEncoding)
         .split('&')
         .foldLeft(
@@ -81,7 +81,7 @@ class BodyCachingRequestWrapper private (wrappedRequest: HttpServletRequest) ext
 }
 
 object BodyCachingRequestWrapper {
-  def apply( request: HttpServletRequest ): BodyCachingRequestWrapper = {
+  def apply(request: HttpServletRequest): BodyCachingRequestWrapper = {
     request match {
       case request: BodyCachingRequestWrapper => request
       case request => new BodyCachingRequestWrapper(request)

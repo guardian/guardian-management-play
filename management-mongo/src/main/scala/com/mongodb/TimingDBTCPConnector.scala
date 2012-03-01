@@ -1,10 +1,10 @@
 package com.mongodb
 
 import scala.collection.JavaConversions._
-import com.gu.management.{Loggable, Timing, TimingMetric}
+import com.gu.management.{ Loggable, Timing, TimingMetric }
 
 class TimingDBTCPConnector(private val targetConnector: DBTCPConnector, private val timingMetric: TimingMetric, mongo: Mongo, serverAddresses: List[ServerAddress])
-  extends DBTCPConnector(mongo, serverAddresses) with Loggable {
+    extends DBTCPConnector(mongo, serverAddresses) with Loggable {
 
   override def requestStart = targetConnector.requestStart()
 

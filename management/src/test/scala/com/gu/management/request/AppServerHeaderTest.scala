@@ -9,9 +9,9 @@ class AppServerHeaderTest extends Specification {
       object appServerHeader extends AppServerHeader {
         override def installVarsContent =
           "STAGE=DEV" ::
-          "INT_SERVICE_DOMAIN=gudev.gnl" ::
-          "EXT_SERVICE_DOMAIN=" ::
-          "HOST_HASH=abcdefg" :: Nil
+            "INT_SERVICE_DOMAIN=gudev.gnl" ::
+            "EXT_SERVICE_DOMAIN=" ::
+            "HOST_HASH=abcdefg" :: Nil
       }
 
       appServerHeader.hostHash must_== Some("abcdefg")
@@ -21,8 +21,8 @@ class AppServerHeaderTest extends Specification {
       object appServerHeader extends AppServerHeader {
         override def installVarsContent =
           "STAGE=DEV" ::
-          "INT_SERVICE_DOMAIN=gudev.gnl" ::
-          "EXT_SERVICE_DOMAIN=" :: Nil
+            "INT_SERVICE_DOMAIN=gudev.gnl" ::
+            "EXT_SERVICE_DOMAIN=" :: Nil
       }
 
       appServerHeader.hostHash must_== None
