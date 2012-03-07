@@ -1,11 +1,89 @@
 package com.gu.management
 
+import java.net.{ URLEncoder, URLDecoder }
 import javax.servlet.http.HttpServletRequest
 import scala.collection.JavaConversions._
 import scalax.io.Resource
-import java.net.{ URLEncoder, URLDecoder }
 
-object `package` {
+trait ListMultiMaps {
+  type ListMultiMap[A, B] = Map[A, List[B]]
+
+  implicit def listMultiMap2ListMultiMapOperations[A, B](map: ListMultiMap[A, B]) = new ListMultiMapOperations(map)
+
+  object ListMultiMap {
+    def apply[A, B](): ListMultiMap[A, B] = Map[A, List[B]]()
+    def apply[A, B](kvs: List[(A, B)]): ListMultiMap[A, B] = {
+      var rst = apply[A, B]()
+      kvs foreach { kv =>
+        rst = rst addBinding kv
+      }
+
+      rst
+    }
+  }
+
+  class ListMultiMapOperations[A, B](map: ListMultiMap[A, B]) {
+    def addBinding(key: A, value: B): ListMultiMap[A, B] = {
+      val current = (map get key) getOrElse Nil
+      map + (key -> (value :: current))
+    }
+
+    def addBinding(kv: (A, B)): ListMultiMap[A, B] = addBinding(kv._1, kv._2)
+
+    def addBindings(key: A, values: List[B]): ListMultiMap[A, B] = {
+      var rst = map
+      values foreach { value =>
+        rst = rst.addBinding(key, value)
+      }
+
+      rst
+    }
+    def addBindings(kv: (A, List[B])): ListMultiMap[A, B] = addBindings(kv._1, kv._2)
+    def addBindings(that: ListMultiMap[A, B]): ListMultiMap[A, B] = {
+      var rst = map
+      that foreach { kvs =>
+        rst = rst.addBindings(kvs)
+      }
+
+      rst
+    }
+
+    def removeBinding(key: A, value: B): ListMultiMap[A, B] = {
+      val current = (map get key) getOrElse Nil
+      current filterNot { _ == value } match {
+        case Nil => map - key
+        case updated => map + (key -> updated)
+      }
+    }
+
+    def removeBinding(kv: (A, B)): ListMultiMap[A, B] = removeBinding(kv._1, kv._2)
+
+    def removeBindings(key: A, values: List[B]): ListMultiMap[A, B] = {
+      var rst = map
+      values foreach { value =>
+        rst = rst.removeBinding(key, value)
+      }
+
+      rst
+    }
+    def removeBindings(kv: (A, List[B])): ListMultiMap[A, B] = removeBindings(kv._1, kv._2)
+    def removeBindings(that: ListMultiMap[A, B]): ListMultiMap[A, B] = {
+      var rst = map
+      that foreach { kvs =>
+        rst = rst.removeBindings(kvs)
+      }
+
+      rst
+    }
+
+    def entryExists(key: A, p: B => Boolean): Boolean = (map get key) match {
+      case Some(list) => list exists p
+      case _ => false
+    }
+  }
+}
+
+object `package` extends ListMultiMaps {
 
   implicit def list2ZipWith[A](l: List[A]) = new {
     def zipWith[B](f: A => B): List[(A, B)] = l map { a => (a, f(a)) }
@@ -43,27 +121,7 @@ object `package` {
     def urlencode(encoding: String): String = URLEncoder.encode(s, encoding)
   }
 
-  trait MultimapHandling {
-    def addToMultiMap[K, V](multiMap: Map[K, List[V]], kv: (K, V)): Map[K, List[V]] = {
-      val (key, value) = kv
-      val update = key -> (value :: multiMap.get(key).getOrElse(List[V]()))
-      multiMap + update
-    }
-
-    def addToMultiMap[K, V](multiMap: Map[K, List[V]], kvs: Map[K, List[V]]): Map[K, List[V]] = {
-      var result = multiMap
-      kvs foreach {
-        case (key, values) =>
-          values foreach { value =>
-            result = addToMultiMap(result, (key -> value))
-          }
-      }
-
-      result
-    }
-  }
-
-  trait FormParameterParsing extends MultimapHandling {
+  trait FormParameterParsing {
     def getParameterFrom(param: String, encoding: String): Option[(String, String)] = {
       (param split '=').toList match {
         case List(key, value) => Some(key urldecode encoding, value urldecode encoding)
@@ -71,17 +129,11 @@ object `package` {
       }
     }
 
-    def getParametersFrom(body: String, encoding: String): Map[String, List[String]] = {
+    def getParametersFrom(body: String, encoding: String): ListMultiMap[String, String] = {
       val split: List[String] = (body split '&').toList
+      val params = split flatMap { param => getParameterFrom(param, encoding).toList }
 
-      var params = Map[String, List[String]]()
-      split foreach { keyValueString =>
-        getParameterFrom(keyValueString, encoding) foreach { kv =>
-          params = addToMultiMap(params, kv)
-        }
-      }
-
-      params
+      ListMultiMap(params)
     }
   }
 
