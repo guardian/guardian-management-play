@@ -1,6 +1,6 @@
 package com.gu.management.servlet
 
-import com.gu.management.{ HttpResponse, Method, HttpRequest }
+import com.gu.management._
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 object ServletHttpRequest {
@@ -16,7 +16,7 @@ object ServletHttpRequest {
 case class ServletHttpResponse(httpServletResponse: HttpServletResponse) extends HttpResponse {
   var contentType: String = "text/html"
   var status: Int = 200
-  var body: String = ""
+  var body: ResponseBody = NoResponseBody
 
   def send() {
     httpServletResponse setCharacterEncoding encoding
@@ -27,7 +27,7 @@ case class ServletHttpResponse(httpServletResponse: HttpServletResponse) extends
     }
 
     httpServletResponse setStatus status
-    httpServletResponse.getWriter.println(body)
+    httpServletResponse.getWriter.println(body.toText)
   }
 
   def sendError(code: Int, message: String) {
