@@ -38,7 +38,7 @@ class ScalaManagementFilter extends ManagementFilter {
     new DummyPage() ::
       new ManifestPage() ::
       new Switchboard(Switches.all) ::
-      new StatusPage("Example", TimingMetrics.all) ::
+      StatusPage("Example", TimingMetrics.all) ::
       new HealthcheckManagementPage() ::
       new PropertiesPage(Properties.all) ::
       new LogbackLevelPage() ::
