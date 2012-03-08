@@ -25,18 +25,14 @@ trait ListMultiMaps {
   class ListMultiMapOperations[A, B](map: ListMultiMap[A, B]) {
     def addBinding(key: A, value: B): ListMultiMap[A, B] = {
       val current = (map get key) getOrElse Nil
-      map + (key -> (value :: current))
+      map + (key -> (current ++ List(value)))
     }
 
     def addBinding(kv: (A, B)): ListMultiMap[A, B] = addBinding(kv._1, kv._2)
 
     def addBindings(key: A, values: List[B]): ListMultiMap[A, B] = {
-      var rst = map
-      values foreach { value =>
-        rst = rst.addBinding(key, value)
-      }
-
-      rst
+      val current = (map get key) getOrElse Nil
+      map + (key -> (current ++ values))
     }
     def addBindings(kv: (A, List[B])): ListMultiMap[A, B] = addBindings(kv._1, kv._2)
     def addBindings(that: ListMultiMap[A, B]): ListMultiMap[A, B] = {
@@ -59,12 +55,11 @@ trait ListMultiMaps {
     def removeBinding(kv: (A, B)): ListMultiMap[A, B] = removeBinding(kv._1, kv._2)
 
     def removeBindings(key: A, values: List[B]): ListMultiMap[A, B] = {
-      var rst = map
-      values foreach { value =>
-        rst = rst.removeBinding(key, value)
+      val current = (map get key) getOrElse Nil
+      current filterNot { values contains _ } match {
+        case Nil => map - key
+        case updated => map + (key -> updated)
       }
-
-      rst
     }
     def removeBindings(kv: (A, List[B])): ListMultiMap[A, B] = removeBindings(kv._1, kv._2)
     def removeBindings(that: ListMultiMap[A, B]): ListMultiMap[A, B] = {

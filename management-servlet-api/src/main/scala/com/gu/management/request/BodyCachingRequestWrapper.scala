@@ -15,7 +15,7 @@ class BodyCachingRequestWrapper(val request: HttpServletRequest) extends HttpSer
   // In theory request.getParameterMap should not return parameters from the body as the body
   // has been read at this point, this may vary depending on container implementation or if there are other
   // body caching wrappers up stream
-  lazy val params: ListMultiMap[String, String] = request.parameters addBindings formParams
+  lazy val params: ListMultiMap[String, String] = formParams addBindings request.parameters
 
   lazy val isForm: Boolean = request.getContentType() startsWith ("application/x-www-form-urlencoded")
 
