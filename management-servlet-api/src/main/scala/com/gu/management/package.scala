@@ -117,14 +117,14 @@ object `package` extends ListMultiMaps {
   }
 
   trait FormParameterParsing {
-    def getParameterFrom(param: String, encoding: String): Option[(String, String)] = {
+    def getParameterFrom(param: String, encoding: String = "UTF-8"): Option[(String, String)] = {
       (param split '=').toList match {
         case List(key, value) => Some(key urldecode encoding, value urldecode encoding)
         case _ => None
       }
     }
 
-    def getParametersFrom(body: String, encoding: String): ListMultiMap[String, String] = {
+    def getParametersFrom(body: String, encoding: String = "UTF-8"): ListMultiMap[String, String] = {
       val split: List[String] = (body split '&').toList
       val params = split flatMap { param => getParameterFrom(param, encoding).toList }
 
