@@ -1,19 +1,19 @@
 Guardian Management
 ===================
 
-Our policy is that each app exposes its user facing pages on a sub url,
+Our policy is that each app exposes its main functionality on a sub-URL,
 and administrative pages on `/management`. So, for example, `content-api.war`
 when deployed to a container has the actual api under `/content-api/api` and
 the management pages on `/content-api/management`.
 
-The `/management` url should return a html page that links to all management
+The `/management` URL should return an HTML page that links to all management
 pages.
 
 This library provides standard management pages and makes it easy to create 
 new app-specific ones. 
 
-It is intended to be web framework agnostic and currently has support for 
-anything using the servlet API and the Play framework. A small adapter library 
+The library is  intended to be web framework agnostic and currently has support for 
+anything using the servlet API or the Play framework. A small adapter library 
 for the request and response abstractions, blatantly inspired by/ripped off from 
 [lift](http://www.liftweb.net), needs to be added to support other frameworks.
 
