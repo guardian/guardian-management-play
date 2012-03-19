@@ -1,5 +1,6 @@
 resolvers ++= Seq(
   Classpaths.typesafeResolver,
+  "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
   "Web plugin repo" at "http://siasia.github.com/maven2",
   "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
 )
