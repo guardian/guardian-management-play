@@ -169,7 +169,7 @@ and a more complex page that supports POSTs is
 
 Providing metrics for GANGLIA
 =====================
-Since version 5, guarian-management has been designed to simply allow application metrics to be consumed by the [Ganglia monitoring system](http://ganglia.sourceforge.net/). 
+Since version 5, guardian-management has been designed to allow application to simply provide metrics for consumption by the [Ganglia monitoring system](http://ganglia.sourceforge.net/). 
 
  * Metrics are presented by a StatusPage object, the name of which should be the name of your app:
 
