@@ -1,16 +1,10 @@
 Guardian Management
 ===================
 
-Our policy is that each app exposes its main functionality on a sub-URL,
-and administrative pages on `/management`. So, for example, `content-api.war`
-when deployed to a container has the actual api under `/content-api/api` and
-the management pages on `/content-api/management`.
-
-The `/management` URL should return an HTML page that links to all management
-pages.
-
-This library provides standard management pages and makes it easy to create 
-new app-specific ones. 
+In order to simplify their management, Guardian web-apps should conform to our [web applications specification]
+(https://docs.google.com/document/d/12ckZC0fGtilntcsJy6mBUylvohLoxUKjkwGDaur-pE8/edit). 
+This library provides standard management pages and makes it easy to create new 
+app-specific ones in order to fulfill those criteria. 
 
 The library is  intended to be web framework agnostic and currently has support for 
 anything using the servlet API or the Play framework. A small adapter library 
@@ -173,11 +167,11 @@ and a more complex page that supports POSTs is
 [the switchboard](https://github.com/guardian/guardian-management/blob/master/management/src/main/scala/com/gu/management/switchables.scala).
 
 
-Going from CACTI to GANGLIA
+Providing metrics for GANGLIA
 =====================
-There is a major, breaking, change when you use the ganglia (5.x) version of guardian management.
+Since version 5, guarian-management has been designed to simply allow application metrics to be consumed by the [Ganglia monitoring system](http://ganglia.sourceforge.net/). 
 
-(1) When you initialise your StatusPage object, you need to name it as being the status page of your app:
+ * Metrics are presented by a StatusPage object, the name of which should be the name of your app:
 
 `new StatusPage("My App Name", Metrics.....)`
 
@@ -186,7 +180,13 @@ So for example identity has 2 status pages:
 `new StatusPage("identity-webapp", Metrics.....)`
 `new StatusPage("identity-api", Metrics.....)`
 
-(2) Creating A Metric
+ * There are three types of metric currently supported:
+
+   * Timing: standard timing metric, takes number of events over a time period. Also provides a count of those events.
+   * Count: Constantly incrementing counter.
+   * Gauge: Count at a particular point in time.
+
+ * Creating A Metric
 
 You need to provide four arguments, with an optional fifth.
 
@@ -226,15 +226,4 @@ This allows Ganglia to give the proportion of time of the HTTP request taken tal
 `object MongoRequests extends TimingMetric("requests", "oracle", "Oracle Requests", "Oracle request timer", Some(Requests))`
 
 Ganglia would now be able to show you propertions of each DB request as a proportion of total HTTP time.
-
-
-(3) Types of metric
-
-    - Timing: standard timing metric, takes number of events over a time period.
-    - Count: Constantly incrementing counter.
-    - Gauge: Count at a particular point in time.
-
-(4) Extra docs:
-
-See guardian google docs for "Web Applications Specifications"
 
