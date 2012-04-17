@@ -136,7 +136,11 @@ case class TimingMetric(
   }
 }
 
-class NoOpTimingMetric extends TimingMetric("", "", "", "") {
+class NoOpTimingMetric(group: String, name: String, title: String, description: String, master: Option[Metric] = None)
+    extends TimingMetric(group, name, title, description, master) {
+
+  def this() = this("", "", "", "")
+
   @inline override def recordTimeSpent(timeSpentInMillis: Long) {}
   @inline override def count = 0l
   @inline override def totalTimeInMillis = 0l
