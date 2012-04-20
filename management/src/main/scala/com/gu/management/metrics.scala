@@ -31,9 +31,9 @@ trait Metric {
   lazy val definition: Definition = Definition(group, name)
 }
 
-case class GaugeMetric(
-    group: String,
-    name: String,
+class GaugeMetric(
+    val group: String,
+    val name: String,
     title: String,
     description: String,
     master: Option[Metric] = None) extends Metric {
@@ -56,9 +56,9 @@ case class GaugeMetric(
   )
 }
 
-case class CountMetric(
-    group: String,
-    name: String,
+class CountMetric(
+    val group: String,
+    val name: String,
     title: String,
     description: String,
     master: Option[Metric] = None) extends Metric {
@@ -81,9 +81,9 @@ case class CountMetric(
   )
 }
 
-case class TimingMetric(
-    group: String,
-    name: String,
+class TimingMetric(
+    val group: String,
+    val name: String,
     title: String,
     description: String,
     master: Option[Metric] = None) extends Metric {
