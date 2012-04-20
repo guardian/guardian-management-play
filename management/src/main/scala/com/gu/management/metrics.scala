@@ -24,8 +24,8 @@ case class StatusMetric(
   units: Option[String] = None)
 
 trait Metric {
-  val group: String
-  val name: String
+  def group: String
+  def name: String
   def asJson: StatusMetric
 
   lazy val definition: Definition = Definition(group, name)
