@@ -81,6 +81,16 @@ class CountMetric(
   )
 }
 
+object CountMetric {
+
+  def apply(group: String, name: String, title: String, description: String): CountMetric =
+    new CountMetric(group, name, title, description, None)
+
+  def apply(group: String, name: String, title: String, description: String, master: Metric): CountMetric =
+    new CountMetric(group, name, title, description, Some(master))
+
+}
+
 class TimingMetric(
     val group: String,
     val name: String,
@@ -132,6 +142,12 @@ class TimingMetric(
 }
 
 object TimingMetric {
+
+  def apply(group: String, name: String, title: String, description: String): TimingMetric =
+    new TimingMetric(group, name, title, description, None)
+
+  def apply(group: String, name: String, title: String, description: String, master: Metric): TimingMetric =
+    new TimingMetric(group, name, title, description, Some(master))
 
   def empty = new TimingMetric("application", "Empty", "Empty", "Empty")
 
