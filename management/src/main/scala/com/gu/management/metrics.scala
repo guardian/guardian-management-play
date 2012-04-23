@@ -36,14 +36,10 @@ class GaugeMetric(
     val name: String,
     title: String,
     description: String,
+    getCount: () => Long,
     master: Option[Metric] = None) extends Metric {
-  private val _count = new AtomicLong()
 
-  def recordCount(count: Int) {
-    _count.addAndGet(count)
-  }
-
-  def count = _count.get
+  def count = getCount()
 
   def asJson = StatusMetric(
     group = group,
