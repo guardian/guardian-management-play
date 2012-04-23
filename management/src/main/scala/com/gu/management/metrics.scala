@@ -3,9 +3,9 @@ package com.gu.management
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.Callable
 
-case class Definition(group: String, name: String)
+private[management] case class Definition(group: String, name: String)
 
-case class StatusMetric(
+private[management] case class StatusMetric(
   group: String = "application",
   master: Option[Definition] = None,
   // name should be brief and underscored not camel case
@@ -156,5 +156,25 @@ object TimingMetric {
     new TimingMetric(group, name, title, description, Some(master))
 
   def empty = new TimingMetric("application", "Empty", "Empty", "Empty")
+
+}
+
+class TextMetric(
+    val group: String,
+    val name: String,
+    title: String,
+    description: String,
+    value: () => String,
+    master: Option[Metric] = None) extends Metric {
+
+  def asJson = StatusMetric(
+    group = group,
+    master = master map (_.definition),
+    name = name,
+    `type` = "text",
+    title = title,
+    description = description,
+    value = Some(value())
+  )
 
 }
