@@ -52,6 +52,16 @@ class GaugeMetric(
   )
 }
 
+object GaugeMetric {
+
+  def apply(group: String, name: String, title: String, description: String, getCount: () => Long): GaugeMetric =
+    new GaugeMetric(group, name, title, description, getCount, None)
+
+  def apply(group: String, name: String, title: String, description: String, getCount: () => Long, master: Metric): GaugeMetric =
+    new GaugeMetric(group, name, title, description, getCount, Some(master))
+
+}
+
 class CountMetric(
     val group: String,
     val name: String,
