@@ -31,25 +31,31 @@ trait Metric {
   lazy val definition: Definition = Definition(group, name)
 }
 
-class GaugeMetric(
+abstract class InstantaneousMetric[A](
+    `type`: String,
     val group: String,
     val name: String,
     title: String,
     description: String,
-    getCount: () => Long,
+    getValue: () => A,
     master: Option[Metric] = None) extends Metric {
-
-  def count = getCount()
 
   def asJson = StatusMetric(
     group = group,
     master = master map { _.definition },
     name = name,
-    `type` = "gauge",
+    `type` = `type`,
     title = title,
     description = description,
-    value = Some(count.toString)
+    value = Some(getValue().toString)
   )
+}
+
+class GaugeMetric(group: String, name: String, title: String, description: String, getCount: () => Long,
+  master: Option[Metric] = None)
+    extends InstantaneousMetric[Long]("gauge", group, name, title, description, getCount, master) {
+
+  def count: Long = getCount()
 }
 
 object GaugeMetric {
@@ -59,6 +65,14 @@ object GaugeMetric {
 
   def apply(group: String, name: String, title: String, description: String, getCount: () => Long, master: Metric): GaugeMetric =
     new GaugeMetric(group, name, title, description, getCount, Some(master))
+
+}
+
+class TextMetric(group: String, name: String, title: String, description: String, getValue: () => String,
+  master: Option[Metric] = None)
+    extends InstantaneousMetric[String]("text", group, name, title, description, getValue, master) {
+
+  def value: String = getValue()
 
 }
 
@@ -156,25 +170,5 @@ object TimingMetric {
     new TimingMetric(group, name, title, description, Some(master))
 
   def empty = new TimingMetric("application", "Empty", "Empty", "Empty")
-
-}
-
-class TextMetric(
-    val group: String,
-    val name: String,
-    title: String,
-    description: String,
-    value: () => String,
-    master: Option[Metric] = None) extends Metric {
-
-  def asJson = StatusMetric(
-    group = group,
-    master = master map (_.definition),
-    name = name,
-    `type` = "text",
-    title = title,
-    description = description,
-    value = Some(value())
-  )
 
 }
