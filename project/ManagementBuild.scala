@@ -4,7 +4,7 @@ import sbt.PlayProject._
 
 object ManagementBuild extends Build {
 
-  lazy val root = Project("root", file(".")) aggregate (
+  lazy val root = Project("management-root", file(".")) aggregate (
     management,
     managementServletApi,
     managementPlay,
