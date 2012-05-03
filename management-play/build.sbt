@@ -1,6 +1,6 @@
 
 libraryDependencies ++= Seq(
-    "play" %% "play" % "2.0",
+    "play" %% "play" % "2.0.1",
     "org.specs2" %% "specs2" % "1.5" % "test",
     "play" %% "play-test" % "2.0" % "test"
 )
