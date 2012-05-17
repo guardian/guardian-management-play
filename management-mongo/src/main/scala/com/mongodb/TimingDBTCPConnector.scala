@@ -54,20 +54,22 @@ class TimingDBTCPConnector(private val targetConnector: DBTCPConnector, private 
       targetConnector.say(db, m, concern, hostNeeded)
     }
 
-  override def call(db: DB, coll: DBCollection, m: OutMessage): Response =
+  override def call(db: DB, coll: DBCollection, m: OutMessage, hostNeeded: ServerAddress, decoder: DBDecoder): Response =
     Timing.debug(logger, "mongo db call()", timingMetric) {
-      targetConnector.call(db, coll, m)
-    }
-
-  override def call(db: DB, coll: DBCollection, m: OutMessage, hostNeeded: ServerAddress): Response =
-    Timing.debug(logger, "mongo db call()", timingMetric) {
-      targetConnector.call(db, coll, m, hostNeeded)
+      targetConnector.call(db, coll, m, hostNeeded, decoder)
     }
 
   override def call(db: DB, coll: DBCollection, m: OutMessage, hostNeeded: ServerAddress, retries: Int): Response =
     Timing.debug(logger, "mongo db call()", timingMetric) {
       targetConnector.call(db, coll, m, hostNeeded, retries)
     }
+
+  override def call(db: DB, coll: DBCollection, m: OutMessage, hostNeeded: ServerAddress, retries: Int, readPref: ReadPreference, decoder: DBDecoder): Response =
+    Timing.debug(logger, "mongo db call()", timingMetric) {
+      targetConnector.call(db, coll, m, hostNeeded, retries, readPref, decoder)
+    }
+
+  override def start() { targetConnector.start }
 
   override def isOpen: Boolean = targetConnector.isOpen
 }
