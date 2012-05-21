@@ -22,7 +22,7 @@ class InternalManagementPlugin(val app: Application) extends Plugin with Loggabl
 
   override def onStart() {
     logger.debug("Starting internal management server")
-    ManagementServer.start(handler, appName)
+    ManagementServer.start(handler)
   }
   override def onStop() {
     logger.debug("Shutting down management server")

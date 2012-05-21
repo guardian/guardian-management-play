@@ -12,11 +12,11 @@ object ManagementServer extends Loggable with PortFileHandling {
   val permittedPorts = managementPort to managementLimit
   var server: Option[HttpServer] = None
 
-  def start(handler: ManagementHandler, appName: String) {
-    startServer(managementPort, handler, appName)
+  def start(handler: ManagementHandler) {
+    startServer(managementPort, handler)
   }
 
-  private def startServer(port: Int, handler: ManagementHandler, appName: String) {
+  private def startServer(port: Int, handler: ManagementHandler) {
     synchronized {
       if (server.isEmpty && (port in permittedPorts)) {
         try {
@@ -24,12 +24,12 @@ object ManagementServer extends Loggable with PortFileHandling {
           newServer.createContext("/", handler)
           newServer.setExecutor(null)
           newServer.start()
-          createPortFile(appName, newServer.getAddress.getPort)
+          createPortFile(handler.applicationName, newServer.getAddress.getPort)
           server = Some(newServer)
         } catch {
           case e: BindException => {
             logger.info("Port %d in use. Retrying with next port." format port)
-            startServer(port + 1, handler, appName)
+            startServer(port + 1, handler)
           }
         }
       } else {
