@@ -14,7 +14,7 @@ object StatusPage {
     new StatusPage(application, metricsCallback)
 }
 
-class StatusPage(application: String, metrics: () => Seq[Metric]) extends JsonManagementPage {
+class StatusPage(application: String, metrics: () => Seq[Metric], defaultMetrics: Seq[Metric] = JvmMetrics.all) extends JsonManagementPage {
   val path = "/management/status"
-  def jsonObj = StatusResponseJson(application = application, metrics = metrics() map (_.asJson))
+  def jsonObj = StatusResponseJson(application = application, metrics = metrics() ++ defaultMetrics map (_.asJson))
 }
