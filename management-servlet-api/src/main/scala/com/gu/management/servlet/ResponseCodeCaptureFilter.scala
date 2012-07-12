@@ -13,35 +13,31 @@ object StatusCodeChecker {
 class ServerErrorResponseCaptureFilter extends ResponseCodeCaptureFilter(ServerErrorCounter, StatusCodeChecker.serverError)
 class ClientErrorResponseCaptureFilter extends ResponseCodeCaptureFilter(ClientErrorCounter, StatusCodeChecker.clientError)
 
-class ResponseCodeCaptureFilter(metric: CountMetric, shouldCount: Int => Boolean, shouldLog: Boolean = true) extends AbstractHttpFilter with Loggable {
+class ResponseCodeCaptureFilter(metric: CountMetric, shouldCount: Int => Boolean) extends AbstractHttpFilter with Loggable {
 
   def doHttpFilter(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
     val wrappedResponse = new HttpServletResponseWrapper(response) {
-      var statusCode: Option[Int] = None
+      var statusCode: Int = 200
 
       override def setStatus(status: Int) {
         super.setStatus(status)
-        statusCode = Some(status)
+        statusCode = status
       }
 
       override def setStatus(status: Int, message: String) {
         super.setStatus(status, message)
-        statusCode = Some(status)
+        statusCode = status
       }
 
       override def sendError(status: Int, message: String) {
         super.sendError(status, message)
-        statusCode = Some(status)
+        statusCode = status
       }
 
     }
 
     chain.doFilter(request, wrappedResponse)
 
-    wrappedResponse.statusCode match {
-      case Some(statusCode) if (shouldCount(statusCode)) => metric.recordCount(1)
-      case None if (shouldLog) => logger.warn("No status code set by application, unable to determine if metric should be updated")
-      case _ =>
-    }
+    if (shouldCount(statusCode)) metric.recordCount(1)
   }
 }
