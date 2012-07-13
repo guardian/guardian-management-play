@@ -38,6 +38,6 @@ class ResponseCodeCaptureFilter(metric: CountMetric, shouldCount: Int => Boolean
 
     chain.doFilter(request, wrappedResponse)
 
-    if (shouldCount(statusCode)) metric.recordCount(1)
+    if (shouldCount(wrappedResponse.statusCode)) metric.recordCount(1)
   }
 }
