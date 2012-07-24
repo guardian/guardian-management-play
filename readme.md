@@ -65,8 +65,8 @@ the pages member:
       lazy val pages =
         new DummyPage() ::
         new ManifestPage() ::
-        new Switchboard(Switches.all, applicationName) ::
-        new StatusPage(TimingMetrics.all) ::
+        new Switchboard(applicationName, Switches.all) ::
+        new StatusPage(applicationName, TimingMetrics.all) ::
         Nil
     }
 
@@ -136,8 +136,8 @@ pages:
       lazy val pages =
         new DummyPage() ::
         new ManifestPage() ::
-        new Switchboard(Switches.all, applicationName) ::
-        new StatusPage(TimingMetrics.all) ::
+        new Switchboard(applicationName, Switches.all) ::
+        new StatusPage(applicationName, TimingMetrics.all) ::
         Nil
     }
 
@@ -197,7 +197,7 @@ val handler = new ManagementHandler {
     val applicationName = "my-application-name"
     def pages = List(
         new ManifestPage(),
-        new Switchboard(Switches.all, applicationName),
+        new Switchboard(applicationName, Switches.all),
         new StatusPage(applicationName,TimingMetrics.all)
     )
 }
@@ -252,7 +252,7 @@ object Management extends ManagementPageManifest {
   lazy val pages = List(
     new ManifestPage,
     new HealthcheckManagementPage,
-    new Switchboard(Switches.all, applicationName),
+    new Switchboard(applicationName, Switches.all),
     StatusPage(applicationName, Metrics.all),
     new LogbackLevelPage(applicationName)
   )
