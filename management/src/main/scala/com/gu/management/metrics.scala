@@ -55,7 +55,7 @@ class TextMetric(
     val group: String, val name: String, val title: String, val description: String,
     val getValue: () => String, override val master: Option[Metric] = None) extends AbstractMetric[String] {
   override val `type`: String = "text"
-  override def asJson: StatusMetric = super.asJson.copy(count = Some(getValue().toString))
+  override def asJson: StatusMetric = super.asJson.copy(value = Some(getValue().toString))
 }
 
 class CountMetric(

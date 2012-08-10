@@ -54,7 +54,7 @@ class MetricsTest extends Specification {
       )
 
       metric.getValue() must_== "value"
-      metric.asJson.count must_== Some("value")
+      metric.asJson.value must_== Some("value")
     }
   }
 
