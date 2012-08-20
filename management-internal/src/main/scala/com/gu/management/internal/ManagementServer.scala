@@ -4,7 +4,7 @@ import com.sun.net.httpserver.{ HttpExchange, HttpHandler, HttpServer }
 import com.gu.management._
 import java.net.{ BindException, InetSocketAddress }
 import java.io.File
-import sbt._
+import scalax.file.Path
 
 object ManagementServer extends Loggable with PortFileHandling {
   val managementPort = 18080
@@ -56,7 +56,7 @@ trait PortFileHandling extends Loggable {
   def createPortFile(appName: String, port: Int): Boolean = {
     val file = new File(portFileRoot + appName + ".port")
     try {
-      IO.write(file, port.toString, append = false)
+      Path(file).write(port.toString)
       portFile = Some(file)
       true
     } catch {
@@ -66,7 +66,7 @@ trait PortFileHandling extends Loggable {
     }
   }
   def deletePortFile() {
-    portFile.foreach(IO.delete(_))
+    portFile.foreach(Path(_).delete())
     portFile = None
   }
 }
