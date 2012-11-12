@@ -91,10 +91,14 @@ trait ManagementHandler extends HttpHandler with Loggable {
         case request =>
           val page = pagesWithIndex find { _ canDispatch request }
           logger.debug("Serving page: " + page.getOrElse("none"))
-          page map { _ dispatch httpRequest } getOrElse {
-            ErrorResponse(404, "No management page for: " + request.path)
+          try {
+            page map { _ dispatch httpRequest } getOrElse {
+              ErrorResponse(404, "No management page for: " + request.path)
+            }
+          } catch {
+            case e: Exception =>
+              ErrorResponse(500, "Exception thrown whilst handling internal management page request:\n\n%s\n    %s" format (e.toString, e.getStackTraceString.replace("\n", "\n    ")))
           }
-
       }
 
       response to httpResponse
