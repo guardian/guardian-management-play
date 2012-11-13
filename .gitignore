@@ -12,6 +12,7 @@ project/boot/
 *.iws
 .idea/
 out/
+.history
 
 # stuff to ignore from play
 example-play/logs
