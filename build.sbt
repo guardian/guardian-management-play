@@ -3,7 +3,7 @@ import java.util.jar._
 crossScalaVersions in ThisBuild := Seq("2.9.1")
 
 // doing "in ThisBuild" makes this default setting for all projects in this build
-version in ThisBuild := "5.20-SNAPSHOT"
+version in ThisBuild := "5.20"
 
 organization in ThisBuild := "com.gu"
 
