@@ -19,7 +19,7 @@ trait ManagementFilter extends AbstractHttpFilter with Loggable {
     page match {
       case Some(page) if page.needsAuth => request.getHeaderOption("Authorization") match {
         case Some(authString) if userProvider.isValid(extractCredentials(authString)) => page.dispatch(httpRequest).sendTo(httpResponse)
-        case None => response.sendError(401, "Needs Authorisation")
+        case _ => response.sendError(401, "Needs Authorisation")
       }
       case Some(page) => page.dispatch(httpRequest).sendTo(httpResponse)
       case _ => chain.doFilter(request, response)
@@ -29,9 +29,10 @@ trait ManagementFilter extends AbstractHttpFilter with Loggable {
   lazy val pagesWithIndex = IndexPage(pages, applicationName, version) :: pages
 
   private def extractCredentials(authString: String) = {
-    val decoder = new sun.misc.BASE64Decoder()
-    val userAndPass = new String(decoder.decodeBuffer(authString), "UTF-8")
-    UserCredentials(userAndPass.takeWhile(c => c != ":"), userAndPass.dropWhile(_ != ":").drop(1))
+    // authstring consists of "Basic Base64(user:pass)".
+    val userAndPass = new String(javax.xml.bind.DatatypeConverter.parseBase64Binary(authString.drop(6)), "UTF-8")
+    val (user, pass) = userAndPass.splitAt(userAndPass.indexWhere(_ == ':'))
+    UserCredentials(user, pass.drop(1))
   }
 
   /**
