@@ -23,108 +23,92 @@ class FakeManagementPage(override val path: String, val response: Response, over
 }
 
 class HttpFilterTest extends FlatSpec with ShouldMatchers with MockitoSugar {
-  "ManagementFilter" should "pass onto page if path matches" in {
+  trait FilterWithPageTest {
     val mockRequest = new MockHttpServletRequest("/foo")
     val mockResponse = mock[Response]
     val mockHttpResponse = mock[HttpServletResponse]
     val finalChain = mock[FilterChain]
-
-    // Given a page that does not require authentication
-    val testPage = new FakeManagementPage("/foo", mockResponse, false)
+    val mockUserProvider = mock[UserProvider]
+    def pageUnderTest: ManagementPage
     val testFilter = new ManagementFilter {
-      val userProvider = null
+      val userProvider = mockUserProvider
       val applicationName = "foo"
-      val pages = testPage :: Nil
+      val pages = pageUnderTest :: Nil
     }
+    when(mockUserProvider.realm) thenReturn "test"
+  }
 
-    // When we call doHttpFilter
-    testFilter.doHttpFilter(mockRequest, mockHttpResponse, finalChain)
-    // It should call the page to render to the response
-    verify(mockResponse).sendTo(any[ServletHttpResponse]())
-    // It should not call the chain further
-    verifyNoMoreInteractions(finalChain)
-    verifyNoMoreInteractions(mockResponse)
+  "ManagementFilter" should "pass onto page if path matches" in {
+    new FilterWithPageTest {
+      // Given a page that does not require authentication
+      override def pageUnderTest = new FakeManagementPage("/foo", mockResponse, false)
+
+      // When we call doHttpFilter
+      testFilter.doHttpFilter(mockRequest, mockHttpResponse, finalChain)
+      // It should call the page to render to the response
+      verify(mockResponse).sendTo(any[ServletHttpResponse]())
+      // It should not call the chain further
+      verifyNoMoreInteractions(finalChain)
+      verifyNoMoreInteractions(mockResponse)
+    }
   }
 
   it should "return a 401 Unauthorised for unauthorised access of the path" in {
-    val mockRequest = new MockHttpServletRequest("/foo")
-    val mockResponse = mock[Response]
-    val mockHttpResponse = mock[HttpServletResponse]
-    val finalChain = mock[FilterChain]
-    // Given a page that requires authorization
-    val testPage = new FakeManagementPage("/foo", mockResponse, true)
-    val testFilter = new ManagementFilter {
-      val userProvider = null
-      val applicationName = "foo"
-      val pages = testPage :: Nil
+    new FilterWithPageTest {
+      // Given a page that requires authorization
+      override def pageUnderTest = new FakeManagementPage("/foo", mockResponse, true)
+      // When we call doHttpFilter
+      testFilter.doHttpFilter(mockRequest, mockHttpResponse, finalChain)
+      // It should call the page to render to the response
+      verify(mockHttpResponse).sendError(401, "Needs Authorisation")
+      verify(mockHttpResponse).addHeader("WWW-Authenticate", "Basic realm=\"test\"")
+      // It should not call the chain further
+      verifyNoMoreInteractions(finalChain)
+      verifyNoMoreInteractions(mockResponse)
     }
-
-    // When we call doHttpFilter
-    testFilter.doHttpFilter(mockRequest, mockHttpResponse, finalChain)
-    // It should call the page to render to the response
-    verify(mockHttpResponse).sendError(401, "Needs Authorisation")
-    // It should not call the chain further
-    verifyNoMoreInteractions(finalChain)
-    verifyNoMoreInteractions(mockResponse)
-
   }
-  it should "accept an Authorization header" in {
-    val mockRequest = new MockHttpServletRequest("/foo")
-    val mockResponse = mock[Response]
-    val mockHttpResponse = mock[HttpServletResponse]
-    val finalChain = mock[FilterChain]
-    val mockUserProvider = mock[UserProvider]
-    // Given a page that requires authorization
-    val testPage = new FakeManagementPage("/foo", mockResponse, true)
-    val testFilter = new ManagementFilter {
-      val applicationName = "foo"
-      val pages = testPage :: Nil
-      val userProvider = mockUserProvider
-    }
-    // And a user provider for the username
-    when(mockUserProvider.isValid(UserCredentials("user", "pass"))) thenReturn true
-    // And a request with an authorization header
-    mockRequest.addBasicAuth("user", "pass")
 
-    // When we call doHttpFilter
-    testFilter.doHttpFilter(mockRequest, mockHttpResponse, finalChain)
-    // It should check with the userProvider
-    verify(mockUserProvider).isValid(UserCredentials("user", "pass"))
-    // It should call the page to render to the response
-    verify(mockResponse).sendTo(any[ServletHttpResponse]())
-    // It should not call the chain further
-    verifyNoMoreInteractions(finalChain)
-    verifyNoMoreInteractions(mockResponse)
-    verifyNoMoreInteractions(mockUserProvider)
+  it should "accept an Authorization header" in {
+    new FilterWithPageTest {
+      // Given a page that requires authorization
+      override def pageUnderTest = new FakeManagementPage("/foo", mockResponse, true)
+      // And a user provider for the username
+      when(mockUserProvider.isValid(UserCredentials("user", "pass"))) thenReturn true
+      // And a request with an authorization header
+      mockRequest.addBasicAuth("user", "pass")
+
+      // When we call doHttpFilter
+      testFilter.doHttpFilter(mockRequest, mockHttpResponse, finalChain)
+      // It should check with the userProvider
+      verify(mockUserProvider).isValid(UserCredentials("user", "pass"))
+      // It should call the page to render to the response
+      verify(mockResponse).sendTo(any[ServletHttpResponse]())
+      // It should not call the chain further
+      verifyNoMoreInteractions(finalChain)
+      verifyNoMoreInteractions(mockResponse)
+      verifyNoMoreInteractions(mockUserProvider)
+    }
   }
 
   it should "fail the wrong password" in {
-    val mockRequest = new MockHttpServletRequest("/foo")
-    val mockResponse = mock[Response]
-    val mockHttpResponse = mock[HttpServletResponse]
-    val finalChain = mock[FilterChain]
-    val mockUserProvider = mock[UserProvider]
-    // Given a page that requires authorization
-    val testPage = new FakeManagementPage("/foo", mockResponse, true)
-    val testFilter = new ManagementFilter {
-      val applicationName = "foo"
-      val pages = testPage :: Nil
-      val userProvider = mockUserProvider
-    }
-    // And a user provider for the username
-    when(mockUserProvider.isValid(UserCredentials("user", "pass"))) thenReturn false
-    // And a request with an authorization header
-    mockRequest.addBasicAuth("user", "pass")
+    new FilterWithPageTest {
+      // Given a page that requires authorization
+      override def pageUnderTest = new FakeManagementPage("/foo", mockResponse, true)
+      // And a user provider for the username
+      when(mockUserProvider.isValid(UserCredentials("user", "pass"))) thenReturn false
+      // And a request with an authorization header
+      mockRequest.addBasicAuth("user", "pass")
 
-    // When we call doHttpFilter
-    testFilter.doHttpFilter(mockRequest, mockHttpResponse, finalChain)
-    // It should check with the userProvider
-    verify(mockUserProvider).isValid(UserCredentials("user", "pass"))
-    // It should send an error back to the user
-    verify(mockHttpResponse).sendError(401, "Needs Authorisation")
-    // It should not call the chain further
-    verifyNoMoreInteractions(finalChain)
-    verifyNoMoreInteractions(mockResponse)
-    verifyNoMoreInteractions(mockUserProvider)
+      // When we call doHttpFilter
+      testFilter.doHttpFilter(mockRequest, mockHttpResponse, finalChain)
+      // It should check with the userProvider
+      verify(mockUserProvider).isValid(UserCredentials("user", "pass"))
+      // It should send an error back to the user
+      verify(mockHttpResponse).sendError(401, "Needs Authorisation")
+      verify(mockHttpResponse).addHeader("WWW-Authenticate", "Basic realm=\"test\"")
+      // It should not call the chain further
+      verifyNoMoreInteractions(finalChain)
+      verifyNoMoreInteractions(mockResponse)
+    }
   }
 }

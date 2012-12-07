@@ -19,7 +19,10 @@ trait ManagementFilter extends AbstractHttpFilter with Loggable {
     page match {
       case Some(page) if page.needsAuth => request.getHeaderOption("Authorization") match {
         case Some(authString) if userProvider.isValid(extractCredentials(authString)) => page.dispatch(httpRequest).sendTo(httpResponse)
-        case _ => response.sendError(401, "Needs Authorisation")
+        case _ => {
+          response.addHeader("WWW-Authenticate", "Basic realm=\"" + userProvider.realm + "\"")
+          response.sendError(401, "Needs Authorisation")
+        }
       }
       case Some(page) => page.dispatch(httpRequest).sendTo(httpResponse)
       case _ => chain.doFilter(request, response)
