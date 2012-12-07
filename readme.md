@@ -23,7 +23,7 @@ Add the dependency to your build
 In your build.sbt:
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-releases"
-    libraryDependencies += "com.gu" %% "management-servlet-api" % "5.22"
+    libraryDependencies += "com.gu" %% "management-servlet-api" % "5.21"
 
 As of 5.7, Scala 2.8.1 and 2.9.0-1 are no longer supported. Upgrade your project
 to Scala 2.9.1.
@@ -131,7 +131,7 @@ Add the dependency to your build
 In your build.sbt for sbt 0.10:
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-releases"
-    libraryDependencies += "com.gu" %% "management-play" % "5.20"
+    libraryDependencies += "com.gu" %% "management-play" % "5.21"
 
 As of 5.7, Scala 2.8.1 and 2.9.0-1 are no longer supported. Upgrade your project
 to Scala 2.9.1.
@@ -181,7 +181,7 @@ Add the dependency to your build
 In your build.sbt for sbt 0.10:
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-releases"
-    libraryDependencies += "com.gu" %% "management-internal" % "5.17"
+    libraryDependencies += "com.gu" %% "management-internal" % "5.21"
 
 Implement a handler
 -------------------
@@ -223,7 +223,7 @@ Configure your dependencies
 ---------------------------
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-releases"
-    libraryDependencies += "com.gu" %% "management-play" % "5.17"
+    libraryDependencies += "com.gu" %% "management-play" % "5.21"
 
 Add to the play plugins file
 ----------------------------
