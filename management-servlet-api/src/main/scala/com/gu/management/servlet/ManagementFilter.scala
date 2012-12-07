@@ -15,8 +15,9 @@ trait ManagementFilter extends AbstractHttpFilter with Loggable {
     val httpRequest = ServletHttpRequest(request)
     val httpResponse = ServletHttpResponse(response)
 
-    val page = pagesWithIndex find { _.canDispatch(httpRequest) }
-    page match {
+    pagesWithIndex find {
+      _.canDispatch(httpRequest)
+    } match {
       case Some(page) if page.needsAuth => request.getHeaderOption("Authorization") match {
         case Some(authString) if userProvider.isValid(extractCredentials(authString)) => {
           page.dispatch(httpRequest).sendTo(httpResponse)

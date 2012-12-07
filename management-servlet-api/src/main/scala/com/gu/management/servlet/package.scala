@@ -22,11 +22,11 @@ object `package` {
     }
   }
 
-  implicit def base64decodedstring(s: String): { def base64Decoded: String } = new {
+  implicit def base64decodedstring(s: String) = new {
     def base64Decoded: String = new String(javax.xml.bind.DatatypeConverter.parseBase64Binary(s), "UTF-8")
   }
 
-  implicit def httpServletResponseToSendAuth(r: HttpServletResponse): { def sendNeedsAuthorisation(realm: String) } = new {
+  implicit def httpServletResponseToSendAuth(r: HttpServletResponse) = new {
     def sendNeedsAuthorisation(realm: String) {
       r.addHeader("WWW-Authenticate", "Basic realm=\"" + realm + "\"")
       r.sendError(401, "Needs Authorisation")
