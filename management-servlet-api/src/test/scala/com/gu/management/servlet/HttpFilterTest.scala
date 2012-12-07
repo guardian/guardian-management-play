@@ -1,20 +1,15 @@
 package com.gu.management.servlet
 
 import com.gu.management._
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse, HttpServletRequestWrapper }
-import javax.servlet.{ ServletResponse, ServletRequest, FilterChain }
-import org.scalatest
-import scalatest.FlatSpec
-import scalatest.matchers.ShouldMatchers
-import scalatest.mock.MockitoSugar
+import javax.servlet.http.HttpServletResponse
+import javax.servlet.FilterChain
+import org.scalatest.FlatSpec
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import scala.collection.JavaConverters._
-import scala.collection.JavaConversions._
-import java.util
 import net.liftweb.mocks.MockHttpServletRequest
 import com.gu.management.HttpRequest
-import servlet.ServletHttpResponse
 
 class FakeManagementPage(override val path: String, val response: Response, override val needsAuth: Boolean) extends ManagementPage {
   override def dispatch = { case _ => response }
