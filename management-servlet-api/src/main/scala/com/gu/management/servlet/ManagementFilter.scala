@@ -34,8 +34,10 @@ trait ManagementFilter extends AbstractHttpFilter with Loggable {
   private def extractCredentials(authString: String) = {
     // authstring consists of "Basic Base64(user:pass)".
     val userAndPass = new String(javax.xml.bind.DatatypeConverter.parseBase64Binary(authString.drop(6)), "UTF-8")
-    val (user, pass) = userAndPass.splitAt(userAndPass.indexWhere(_ == ':'))
-    UserCredentials(user, pass.drop(1))
+    userAndPass.split(":") match {
+      case Array(user, pass) => UserCredentials(user, pass)
+      case _ => UserCredentials("", "")
+    }
   }
 
   /**
