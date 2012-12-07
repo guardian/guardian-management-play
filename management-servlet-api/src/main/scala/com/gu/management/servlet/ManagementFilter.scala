@@ -34,7 +34,7 @@ trait ManagementFilter extends AbstractHttpFilter with Loggable {
     // authstring consists of "Basic Base64(user:pass)".
     authString.drop(6).base64Decoded.kv(":") match {
       case (user, pass) => UserCredentials(user, pass)
-      case _ => UserCredentials("", "")
+      case _ => UserCredentials.missing
     }
   }
 
