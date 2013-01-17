@@ -2,9 +2,6 @@ import java.util.jar._
 
 scalaVersion in ThisBuild := "2.10.0"
 
-// doing "in ThisBuild" makes this default setting for all projects in this build
-version in ThisBuild := "5.22-SNAPSHOT"
-
 organization in ThisBuild := "com.gu"
 
 releaseSettings
