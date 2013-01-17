@@ -7,6 +7,8 @@ version in ThisBuild := "5.22-SNAPSHOT"
 
 organization in ThisBuild := "com.gu"
 
+releaseSettings
+
 publishArtifact := false
 
 packageOptions in ThisBuild <+= (version, name) map { (v, n) =>
