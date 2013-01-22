@@ -1,7 +1,7 @@
 
 libraryDependencies ++= Seq(
     "play" %% "play" % "2.1-RC2",
-    "org.reflections" % "reflections" % "0.9.8",
+    "org.reflections" % "reflections" % "0.9.8" exclude("javassist", "javassist"), // http://code.google.com/p/reflections/issues/detail?id=140
     "org.specs2" %% "specs2" % "1.5" % "test",
     "play" %% "play-test" % "2.1-RC2" % "test"
 )
