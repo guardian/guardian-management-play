@@ -1,18 +1,16 @@
 
 libraryDependencies ++= Seq(
-    "play" %% "play" % "2.1-RC3",
+    "com.gu" %% "management" % "5.25",
+    "com.gu" %% "management-internal" % "5.25",
+    "com.gu" %% "management-logback" % "5.25",
+    "play" %% "play" % "2.1-RC4",
     "org.reflections" % "reflections" % "0.9.8" exclude("javassist", "javassist"), // http://code.google.com/p/reflections/issues/detail?id=140
-    "org.specs2" %% "specs2" % "1.5" % "test",
-    "play" %% "play-test" % "2.1-RC2" % "test"
+    "org.specs2" %% "specs2" % "1.13" % "test",
+    "play" %% "play-test" % "2.1-RC4" % "test"
 )
 
 // needed for Play
 resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
-
-// sad situation https://github.com/jesseeichar/scala-io/issues/77#issuecomment-11991815
-moduleConfigurations += ModuleConfiguration("com.github.scala-incubator.io", DefaultMavenRepository)
-
-moduleConfigurations += ModuleConfiguration("com.jsuereth", DefaultMavenRepository)
 
 // disable publishing the main javadoc jar
 publishArtifact in (Compile, packageDoc) := false

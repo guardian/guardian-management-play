@@ -1,13 +1,11 @@
 resolvers ++= Seq(
   Classpaths.typesafeResolver,
-  "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
-  "Web plugin repo" at "http://siasia.github.com/maven2"
+  "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
 )
 
-addSbtPlugin("play" % "sbt-plugin" % "2.1-RC2")
+addSbtPlugin("play" % "sbt-plugin" % "2.1-RC4")
 
 addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.4.0")
 
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.6")
 
-libraryDependencies += "com.github.siasia" %% "xsbt-web-plugin" % "0.12.0-0.2.11.1"
