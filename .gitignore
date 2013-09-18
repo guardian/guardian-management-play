@@ -16,3 +16,5 @@ out/
 
 # stuff to ignore from play
 example-play/logs
+
+application.log
