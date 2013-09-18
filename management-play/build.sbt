@@ -15,4 +15,3 @@ resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/
 // disable publishing the main javadoc jar
 publishArtifact in (Compile, packageDoc) := false
 
-seq(scalariformSettings: _*)
