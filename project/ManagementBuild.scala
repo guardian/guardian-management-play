@@ -1,7 +1,5 @@
-import com.typesafe.sbtscalariform.ScalariformPlugin
 import sbt._
 import sbt.Keys._
-import sbt.PlayProject._
 
 object ManagementBuild extends Build {
 
@@ -26,5 +24,5 @@ object ManagementBuild extends Build {
     dependsOn(managementPlay).
     noPublish
 
-  def managementProject(name: String) = Project(name, file(name)).settings(ScalariformPlugin.scalariformSettings :_*)
+  def managementProject(name: String) = Project(name, file(name))
 }
