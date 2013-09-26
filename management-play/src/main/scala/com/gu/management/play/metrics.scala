@@ -5,8 +5,6 @@ import _root_.play.api.mvc._
 import concurrent.Future
 import util.Try
 import com.gu.management._
-import util.Failure
-import util.Success
 
 object RequestMetrics {
 
@@ -31,10 +29,10 @@ object RequestMetrics {
       new MetricsFilter {
         val metrics = Seq(timingMetric)
 
-        def apply(next: (RequestHeader) => Result)(rh: RequestHeader): Result = {
+        override def apply(next: RequestHeader => Future[SimpleResult])(request: RequestHeader): Future[SimpleResult] = {
           val s = new StopWatch
-          val result = next(rh)
-          onFinalPlainResult(result) { _ => timingMetric.recordTimeSpent(s.elapsed) }
+          val result = next(request)
+          result.onComplete { _ => timingMetric.recordTimeSpent(s.elapsed) }
           result
         }
       }
@@ -45,18 +43,16 @@ object RequestMetrics {
     def apply(counters: List[Counter]): MetricsFilter = new MetricsFilter {
       val metrics = counters.map(_.countMetric)
 
-      def apply(next: (RequestHeader) => Result)(rh: RequestHeader): Result = {
-        val result = next(rh)
-        onFinalPlainResult(result) {
-          plainResultTry => counters.foreach(_.submit(plainResultTry))
-        }
+      override def apply(next: RequestHeader => Future[SimpleResult])(request: RequestHeader): Future[SimpleResult] = {
+        val result = next(request)
+        result.onComplete(resultTry => counters.foreach(_.submit(resultTry)))
         result
       }
     }
   }
 
-  case class Counter(condition: Try[PlainResult] => Boolean, countMetric: CountMetric) {
-    def submit(resultTry: Try[PlainResult]) {
+  case class Counter(condition: Try[SimpleResult] => Boolean, countMetric: CountMetric) {
+    def submit(resultTry: Try[SimpleResult]) {
       if (condition(resultTry)) countMetric increment ()
     }
   }
@@ -79,7 +75,7 @@ object RequestMetrics {
 
   object OtherCounter {
     def apply(knownResultTypeCounters: Seq[Counter]) = {
-      def unknown(result: Try[PlainResult]) = !knownResultTypeCounters.exists(_.condition(result))
+      def unknown(result: Try[SimpleResult]) = !knownResultTypeCounters.exists(_.condition(result))
 
       Counter(unknown, new CountMetric("request-status", "other", "Other", "number of pages that responded with an unexpected status code"))
     }
@@ -87,26 +83,12 @@ object RequestMetrics {
 
   object StatusCode {
 
-    def apply(codes: Traversable[Int]): Try[PlainResult] => Boolean = apply(codes.toSet: Int => Boolean)
+    def apply(codes: Traversable[Int]): Try[SimpleResult] => Boolean = apply(codes.toSet: Int => Boolean)
 
-    def apply(codes: Int*): Try[PlainResult] => Boolean = apply(Set(codes: _*): Int => Boolean)
+    def apply(codes: Int*): Try[SimpleResult] => Boolean = apply(Set(codes: _*): Int => Boolean)
 
-    def apply(condition: Int => Boolean)(resultTry: Try[PlainResult]) =
+    def apply(condition: Int => Boolean)(resultTry: Try[SimpleResult]) =
       resultTry.map(plainResult => condition(plainResult.header.status)).getOrElse(false)
-  }
-
-  /**
-   * AsyncResult can - theoretically- return another AsyncResult, which we don't want. Redeem only when have a
-   * non-async result.
-   */
-  private def onFinalPlainResult(result: Result)(k: Try[PlainResult] => Unit) {
-    result match {
-      case plainResult: PlainResult => k(Success(plainResult))
-      case AsyncResult(future: Future[Result]) => future onComplete {
-        case Success(anotherAsyncResult) => onFinalPlainResult(anotherAsyncResult)(k)
-        case Failure(e) => k(Failure(e))
-      }
-    }
   }
 
 }

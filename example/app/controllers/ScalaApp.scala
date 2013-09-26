@@ -2,7 +2,8 @@ package controllers
 
 import play.api.mvc._
 import com.gu.management.Switch.On
-import play.api.libs.concurrent.Akka
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 object ScalaApp extends Controller {
   def apply() = Action {
@@ -22,13 +23,10 @@ object ScalaApp extends Controller {
     Ok("Slept OK")
   }
 
-  def async() = Action {
-    Async {
-      import play.api.Play.current
-      Akka.future {
-        Thread.sleep(2000)
-        Ok("Slept OK")
-      }
+  def async() = Action.async {
+    future {
+      Thread.sleep(2000)
+      Ok("Slept OK")
     }
   }
 }
