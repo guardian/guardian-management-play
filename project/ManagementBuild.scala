@@ -3,7 +3,7 @@ import sbt.Keys._
 
 object ManagementBuild extends Build {
 
-  implicit def project2noPublish(project: Project) = new {
+  implicit class Project2noPublish(project: Project) {
     lazy val noPublish : sbt.Project = project.settings(publish := false)
   }
 
