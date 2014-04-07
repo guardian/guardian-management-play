@@ -1,7 +1,5 @@
 import java.util.jar._
 
-scalaVersion in ThisBuild := "2.10.2"
-
 organization in ThisBuild := "com.gu"
 
 releaseSettings
