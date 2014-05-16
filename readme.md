@@ -5,7 +5,7 @@ Add the dependency to your build
 -----------------------------------
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-releases"
-    libraryDependencies += "com.gu" %% "management-play" % "5.21"
+    libraryDependencies += "com.gu" %% "management-play" % "6.1"
 
 Look at the example!
 -----------------------
@@ -37,7 +37,7 @@ Configure your dependencies
 ---------------------------
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-releases"
-    libraryDependencies += "com.gu" %% "management-play" % "5.21"
+    libraryDependencies += "com.gu" %% "management-play" % "6.1"
 
 Add to the play plugins file
 ----------------------------
@@ -51,14 +51,28 @@ Bind the management pages
 
 The plugin locates the pages and application name by convention.
 
-Create a scala Object called conf.Management that mixes in the ManagementPageManifest trait to
+Create a scala Object called conf.Management that mixes in the com.gu.management.play.Management trait to
 provide the list of pages and your application name to the plugin:
 
 ```scala
 package conf
 
-object Management extends ManagementPageManifest {
+import com.gu.management._
+import com.gu.management.logback.LogbackLevelPage
+import com.gu.management.play.RequestMetrics
+
+object Management extends com.gu.management.play.Management {
   val applicationName = "your-application-name"
+
+  object Switches {
+    val all = List(Healthcheck.switch)
+  }
+
+  object PlayExampleRequestMetrics extends RequestMetrics.Standard
+
+  object Metrics {
+    val all = PlayExampleRequestMetrics.asMetrics
+  }
 
   lazy val pages = List(
     new ManifestPage,
