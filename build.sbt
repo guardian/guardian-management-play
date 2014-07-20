@@ -4,6 +4,10 @@ organization in ThisBuild := "com.gu"
 
 releaseSettings
 
+scalaVersion := "2.10.4"
+
+crossScalaVersions := Seq("2.10.4")
+
 publishArtifact := false
 
 packageOptions in ThisBuild <+= (version, name) map { (v, n) =>

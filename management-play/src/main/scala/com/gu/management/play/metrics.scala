@@ -29,7 +29,7 @@ object RequestMetrics {
       new MetricsFilter {
         val metrics = Seq(timingMetric)
 
-        override def apply(next: RequestHeader => Future[SimpleResult])(request: RequestHeader): Future[SimpleResult] = {
+        override def apply(next: RequestHeader => Future[Result])(request: RequestHeader): Future[Result] = {
           val s = new StopWatch
           val result = next(request)
           result.onComplete { _ => timingMetric.recordTimeSpent(s.elapsed) }
@@ -43,7 +43,7 @@ object RequestMetrics {
     def apply(counters: List[Counter]): MetricsFilter = new MetricsFilter {
       val metrics = counters.map(_.countMetric)
 
-      override def apply(next: RequestHeader => Future[SimpleResult])(request: RequestHeader): Future[SimpleResult] = {
+      override def apply(next: RequestHeader => Future[Result])(request: RequestHeader): Future[Result] = {
         val result = next(request)
         result.onComplete(resultTry => counters.foreach(_.submit(resultTry)))
         result
@@ -51,8 +51,8 @@ object RequestMetrics {
     }
   }
 
-  case class Counter(condition: Try[SimpleResult] => Boolean, countMetric: CountMetric) {
-    def submit(resultTry: Try[SimpleResult]) {
+  case class Counter(condition: Try[Result] => Boolean, countMetric: CountMetric) {
+    def submit(resultTry: Try[Result]) {
       if (condition(resultTry)) countMetric increment ()
     }
   }
@@ -70,12 +70,12 @@ object RequestMetrics {
   }
 
   object ErrorCounter {
-    def apply() = Counter(t => { t.isFailure || (StatusCode(500 to 509)(t)) }, new CountMetric("request-status", "50x_error", "50x Error", "number of pages that responded 50x"))
+    def apply() = Counter(t => { t.isFailure || StatusCode(500 to 509)(t) }, new CountMetric("request-status", "50x_error", "50x Error", "number of pages that responded 50x"))
   }
 
   object OtherCounter {
     def apply(knownResultTypeCounters: Seq[Counter]) = {
-      def unknown(result: Try[SimpleResult]) = !knownResultTypeCounters.exists(_.condition(result))
+      def unknown(result: Try[Result]) = !knownResultTypeCounters.exists(_.condition(result))
 
       Counter(unknown, new CountMetric("request-status", "other", "Other", "number of pages that responded with an unexpected status code"))
     }
@@ -83,11 +83,11 @@ object RequestMetrics {
 
   object StatusCode {
 
-    def apply(codes: Traversable[Int]): Try[SimpleResult] => Boolean = apply(codes.toSet: Int => Boolean)
+    def apply(codes: Traversable[Int]): Try[Result] => Boolean = apply(codes.toSet: Int => Boolean)
 
-    def apply(codes: Int*): Try[SimpleResult] => Boolean = apply(Set(codes: _*): Int => Boolean)
+    def apply(codes: Int*): Try[Result] => Boolean = apply(Set(codes: _*): Int => Boolean)
 
-    def apply(condition: Int => Boolean)(resultTry: Try[SimpleResult]) =
+    def apply(condition: Int => Boolean)(resultTry: Try[Result]) =
       resultTry.map(plainResult => condition(plainResult.header.status)).getOrElse(false)
   }
 

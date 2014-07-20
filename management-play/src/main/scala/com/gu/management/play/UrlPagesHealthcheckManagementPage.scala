@@ -1,10 +1,11 @@
 package conf
 
 import com.gu.management.play.{ Management => GuManagement }
-import play.api.libs.ws.WS
 import scala.concurrent.{Future, Await}
 import com.gu.management.{ErrorResponse, ManagementPage, HttpRequest, PlainTextResponse}
 import scala.concurrent.duration._
+import play.api.libs.ws.WS
+import play.api.Play.current
 
 class UrlPagesHealthcheckManagementPage(val urls: String*) extends ManagementPage {
 

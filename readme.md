@@ -1,11 +1,18 @@
 Getting Started
 ===============
 
+Compatibility
+-------------
+
+Play:  2.3.1
+sbt:   0.13.5
+Scala: 2.10.4
+
 Add the dependency to your build
 -----------------------------------
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-releases"
-    libraryDependencies += "com.gu" %% "management-play" % "5.21"
+    libraryDependencies += "com.gu" %% "management-play" % "7.0"
 
 Look at the example!
 -----------------------
