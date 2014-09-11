@@ -12,9 +12,11 @@ object ManagementBuild extends Build {
     examplePlay
   ).noPublish
 
+  lazy val guardianResolver = resolvers += "Guardian Github" at "http://guardian.github.com/maven/repo-releases"
+
   lazy val management = managementProject("management")
 
-  lazy val managementPlay = managementProject("management-play")
+  lazy val managementPlay = managementProject("management-play").settings(guardianResolver)
 
   lazy val examplePlay = play.Project(
     name = "example",
@@ -22,6 +24,7 @@ object ManagementBuild extends Build {
     dependencies = Nil,
     path = file("example")).
     dependsOn(managementPlay).
+    settings(guardianResolver).
     noPublish
 
   def managementProject(name: String) = Project(name, file(name))
