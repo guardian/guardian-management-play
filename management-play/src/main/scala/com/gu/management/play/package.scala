@@ -8,7 +8,7 @@ import scala.collection.JavaConversions._
 
 object `package` extends ListMultiMaps {
 
-  implicit def request2Parameters[A](request: Request[A]) = new {
+  implicit class Request2Parameters[A](request: Request[A]) {
     lazy val parameters: ListMultiMap[String, String] = {
       val queryStringParameters = request.queryString mapValues { _.toList }
       val bodyFormParameters: Map[String, List[String]] = request.body match {
@@ -20,17 +20,17 @@ object `package` extends ListMultiMaps {
     }
   }
 
-  implicit def request2RequestURI[A](request: Request[A]) = new {
+  implicit class Request2RequestURI[A](request: Request[A]) {
     lazy val requestURI: String = request.uri.replaceAll("\\?.*", "")
   }
 
-  implicit def application2GetConfigurationProperty(app: Application) = new {
+  implicit class Application2GetConfigurationProperty(app: Application) {
     def getConfigurationProperty(key: String, default: String): String = {
       app.configuration.getString(key).getOrElse(default)
     }
   }
 
-  implicit def class2SubTypesFrom[T](supertype: Class[T]) = new {
+  implicit class Class2SubTypesFrom[T](supertype: Class[T]) {
     def subTypesFrom(root: String): Set[Class[_ <: T]] = {
       val reflections = new Reflections(root)
       reflections.getSubTypesOf(supertype).toSet
