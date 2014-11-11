@@ -20,7 +20,11 @@ object ManagementBuild extends Build {
 
   val specs = "org.specs2" %% "specs2" % "2.3.13" % "test"
 
-  lazy val managementPlay = managementProject("management-play").settings(
+  lazy val guardianResolver = resolvers += "Guardian Github" at "http://guardian.github.com/maven/repo-releases"
+
+  lazy val management = managementProject("management")
+
+  lazy val managementPlay = managementProject("management-play").settings(guardianResolver).settings(
     libraryDependencies ++= Seq(
       ws,
       filters,
@@ -30,12 +34,14 @@ object ManagementBuild extends Build {
     )
   )
 
-  lazy val examplePlay = Project("example",file("example"))
-    .dependsOn(managementPlay)
-    .enablePlugins(play.PlayScala)
-    .noPublish.settings(
-      libraryDependencies += specs
-    )
+  lazy val examplePlay = play.Project(
+    name = "example",
+    applicationVersion = "1.0",
+    dependencies = Nil,
+    path = file("example")).
+    dependsOn(managementPlay).
+    settings(guardianResolver).
+    noPublish
 
   def managementProject(name: String) = Project(name, file(name)).settings(Seq(
     javacOptions := Seq(
