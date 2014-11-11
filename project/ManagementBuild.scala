@@ -34,14 +34,12 @@ object ManagementBuild extends Build {
     )
   )
 
-  lazy val examplePlay = play.Project(
-    name = "example",
-    applicationVersion = "1.0",
-    dependencies = Nil,
-    path = file("example")).
-    dependsOn(managementPlay).
-    settings(guardianResolver).
-    noPublish
+  lazy val examplePlay = Project(
+    "example",
+    file("example")
+  ).dependsOn(managementPlay)
+    .settings(guardianResolver)
+    .noPublish
 
   def managementProject(name: String) = Project(name, file(name)).settings(Seq(
     javacOptions := Seq(
