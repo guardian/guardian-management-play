@@ -1,8 +1,10 @@
 package conf
 
+import javax.inject.Inject
+
 import com.gu.management._
 import com.gu.management.logback._
-import play.RequestMetrics
+import com.gu.management.play.{InternalManagementServer, Management, RequestMetrics}
 
 // example of creating your own new page type
 class DummyPage extends ManagementPage {
@@ -27,7 +29,7 @@ object Properties {
   val all = "key1=value1\nkey2=value2"
 }
 
-object Management extends com.gu.management.play.Management {
+object ExampleManagement extends Management {
   val applicationName: String = "Example Play App"
   lazy val pages = List(
     new DummyPage(),
