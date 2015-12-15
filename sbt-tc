@@ -6,7 +6,14 @@ if [ ! -d "$SBT_BOOT_DIR" ]; then
   mkdir -p $SBT_BOOT_DIR
 fi
 
-cat /dev/null | java -Xmx1G -XX:MaxPermSize=250m -XX:+UseCompressedOops \
+export JDK_HOME=/usr/lib/jvm/java-1.8.0
+export JAVA_HOME=${JDK_HOME}
+
+echo "********** Java version **********"
+${JAVA_HOME}/bin/java -version
+echo "**********************************"
+
+cat /dev/null | ${JDK_HOME}/bin/java -Xmx1G -XX:MaxPermSize=250m -XX:+UseCompressedOops \
     -Dsbt.log.noformat=true \
     -Dbuild.configuation.name="$TEAMCITY_BUILDCONF_NAME" \
     -Dbuild.number="$BUILD_NUMBER" \
