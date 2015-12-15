@@ -25,7 +25,7 @@ object ManagementBuild extends Build {
     libraryDependencies ++= Seq(
       ws,
       // see http://code.google.com/p/guava-libraries/issues/detail?id=1095
-      "com.google.code.findbugs" % "jsr305" % "1.3.+"
+      "com.google.code.findbugs" % "jsr305" % "1.3.9"
     )
   )
 

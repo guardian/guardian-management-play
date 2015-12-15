@@ -3,7 +3,6 @@ package com.gu.management.play
 import play.api.Application
 import play.api.mvc.{ AnyContent, Request }
 import com.gu.management.ListMultiMaps
-import org.reflections.Reflections
 import scala.collection.JavaConversions._
 
 object `package` extends ListMultiMaps {
@@ -27,13 +26,6 @@ object `package` extends ListMultiMaps {
   implicit class Application2GetConfigurationProperty(app: Application) {
     def getConfigurationProperty(key: String, default: String): String = {
       app.configuration.getString(key).getOrElse(default)
-    }
-  }
-
-  implicit class Class2SubTypesFrom[T](supertype: Class[T]) {
-    def subTypesFrom(root: String): Set[Class[_ <: T]] = {
-      val reflections = new Reflections(root)
-      reflections.getSubTypesOf(supertype).toSet
     }
   }
 
