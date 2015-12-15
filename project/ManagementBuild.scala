@@ -34,7 +34,10 @@ object ManagementBuild extends Build {
     file("example")
   ).enablePlugins(PlayScala)
     .dependsOn(managementPlay)
-    .settings(guardianResolver)
+    .settings(
+      guardianResolver,
+      libraryDependencies += specs
+    )
     .noPublish
 
   def managementProject(name: String) = Project(name, file(name)).settings(Seq(
