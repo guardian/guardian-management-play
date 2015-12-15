@@ -4,20 +4,18 @@ Getting Started
 Compatibility
 -------------
 
-Play:  2.3.1
-sbt:   0.13.5
-Scala: 2.10.4
+Play:  2.4.6
+sbt:   0.13.9
+Scala: 2.11.7
 
 Add the dependency to your build
 -----------------------------------
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-releases"
-    libraryDependencies += "com.gu" %% "management-play" % "7.0"
+    libraryDependencies += "com.gu" %% "management-play" % "8.0"
 
 Look at the example!
 -----------------------
-
-See example commit https://github.com/guardian/guardian-management/commit/f801e8d0
 
 The [example project](https://github.com/guardian/guardian-management-play/tree/master/example) has
 management routes set up and uses some switches and timing metrics.
@@ -44,27 +42,27 @@ Configure your dependencies
 ---------------------------
 
     resolvers += "Guardian Github Snapshots" at "http://guardian.github.com/maven/repo-releases"
-    libraryDependencies += "com.gu" %% "management-play" % "5.21"
+    libraryDependencies += "com.gu" %% "management-play" % "8.0"
 
-Add to the play plugins file
-----------------------------
+Add to the play configuration
+-----------------------------
 
-Add the following line to conf/play.plugins (create it if it doesn't exist):
+Add the following line to `conf/application.conf`:
 
-    1000:com.gu.management.play.InternalManagementPlugin
+    play.modules.enabled += "com.gu.management.play.InternalManagementModule"
 
 Bind the management pages
 -------------------------
 
-The plugin locates the pages and application name by convention.
+The module must have the pages and application name set in your Global onStart function.
 
-Create a scala Object called conf.Management that mixes in the ManagementPageManifest trait to
+Create a scala Object that mixes in the `com.gu.management.play.Management` trait to
 provide the list of pages and your application name to the plugin:
 
 ```scala
 package conf
 
-object Management extends ManagementPageManifest {
+object YourApplicationManagement extends Management {
   val applicationName = "your-application-name"
 
   lazy val pages = List(
@@ -77,7 +75,19 @@ object Management extends ManagementPageManifest {
 }
 ```
 
-If there is a reason you can't name your file conf.Management, you can override it
-by setting management.manifestobject in application.conf.
+If Global.scala doesn't exist in your project then create it with the 
+skeleton provided below. Otherwise add a call to `InternalManagementServer.start(...)`
+to your onStart method.
 
+```scala
+import com.gu.management.play.InternalManagementServer
+import conf.YourApplicationManagement
+import play.api.Application
+
+object Global {
+  override def onStart(app: Application): Unit = {
+    InternalManagementServer.start(app, YourApplicationManagement)
+  }
+}
+```
 

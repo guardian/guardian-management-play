@@ -1,10 +1,8 @@
 package conf
 
-import javax.inject.Inject
-
 import com.gu.management._
 import com.gu.management.logback._
-import com.gu.management.play.{InternalManagementServer, Management, RequestMetrics}
+import com.gu.management.play.{Management, RequestMetrics}
 
 // example of creating your own new page type
 class DummyPage extends ManagementPage {
