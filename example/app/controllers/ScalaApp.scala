@@ -24,7 +24,7 @@ object ScalaApp extends Controller {
   }
 
   def async() = Action.async {
-    future {
+    Future {
       Thread.sleep(2000)
       Ok("Slept OK")
     }

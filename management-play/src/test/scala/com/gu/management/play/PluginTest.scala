@@ -1,12 +1,13 @@
 package com.gu.management.play
 
+import play.api.{Configuration, Mode, Environment}
 import org.specs2.mutable.Specification
 import play.api.test._
 import play.api.test.Helpers._
-import play.api.Play
 import com.gu.management.internal.ManagementServer
+import play.api.inject.guice.GuiceApplicationBuilder
 import com.gu.management._
-import io.Source
+import scala.io.Source
 
 object TestManagement extends Management {
   val applicationName = "test-app"
@@ -18,35 +19,44 @@ object TestManagement extends Management {
   )
 }
 
-class PluginTest extends Specification {
+object PluginTest extends Specification {
 
   "plugin" should {
     "be created" in {
-      running(FakeApplication(
-        additionalPlugins = Seq("com.gu.management.play.InternalManagementPlugin"),
-        additionalConfiguration = Map("management.search.root" -> "com.gu.management.play")
-      )) {
-        Play.current.plugin[InternalManagementPlugin] must beSome
+      running(FakeApplication()) {
+        configuredAppBuilder.injector.instanceOf[InternalManagementServer].
+          aka("Internal Management Server") must beLike {
+          case server: InternalManagementServer => ok
+          }
       }
     }
     "start management server" in {
-      running(FakeApplication(
-        additionalPlugins = Seq("com.gu.management.play.InternalManagementPlugin"),
-        additionalConfiguration = Map("management.search.root" -> "com.gu.management.play")
-      )) {
+      running(FakeApplication()) {
+        InternalManagementServer.start(configuredAppBuilder, TestManagement)
         ManagementServer.isRunning must beTrue
       }
     }
     "serve management page" in {
-      running(FakeApplication(
-        additionalPlugins = Seq("com.gu.management.play.InternalManagementPlugin"),
-        additionalConfiguration = Map("management.search.root" -> "com.gu.management.play")
-      )) {
+      running(FakeApplication()) {
+        InternalManagementServer.start(configuredAppBuilder, TestManagement)
         val port = ManagementServer.port()
-        val response = Source.fromURL("http://localhost:%d/management/test" format port) mkString ""
-        response must be equalTo ("response")
+        val response = Source.fromURL(s"http://localhost:$port/management/test") mkString ""
+        response must be equalTo "response"
       }
     }
+  }
+
+  def configuredAppBuilder = {
+    import scala.collection.JavaConversions.iterableAsScalaIterable
+
+    val env = Environment.simple(mode = Mode.Test)
+    val config = Configuration.load(env)
+    val modules = config.getStringList("play.modules.enabled").fold(
+      List.empty[String])(l => iterableAsScalaIterable(l).toList)
+
+    new GuiceApplicationBuilder().
+      configure("play.modules.enabled" -> (modules :+
+        "com.gu.management.play.InternalManagementModule")).build()
   }
 
 }

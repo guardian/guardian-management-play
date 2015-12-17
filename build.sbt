@@ -4,9 +4,9 @@ organization in ThisBuild := "com.gu"
 
 releaseSettings
 
-scalaVersion in ThisBuild := "2.11.4"
+scalaVersion in ThisBuild := "2.11.7"
 
-crossScalaVersions := Seq("2.11.4")
+crossScalaVersions := Seq("2.11.7")
 
 publishArtifact := false
 

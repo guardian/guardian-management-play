@@ -1,19 +1,18 @@
+import play.sbt.PlayScala
 import sbt._
 import sbt.Keys._
-import play.Play.autoImport._
-import PlayKeys._
-import play._
+import play.sbt.PlayImport.ws
 
 object ManagementBuild extends Build {
 
   private implicit class Project2noPublish(project: Project) {
-    lazy val noPublish : sbt.Project = project.settings(Seq(
+    lazy val noPublish = project.settings(Seq(
       publish := {},
       publishLocal := {}
     ):_*)
   }
 
-  lazy val root = Project("management-root", file(".")).enablePlugins(play.PlayScala).aggregate(
+  lazy val root = Project("management-root", file(".")).enablePlugins(PlayScala).aggregate(
     managementPlay,
     examplePlay
   ).noPublish
@@ -22,23 +21,23 @@ object ManagementBuild extends Build {
 
   lazy val guardianResolver = resolvers += "Guardian Github" at "http://guardian.github.com/maven/repo-releases"
 
-  lazy val management = managementProject("management")
-
   lazy val managementPlay = managementProject("management-play").settings(guardianResolver).settings(
     libraryDependencies ++= Seq(
       ws,
-      filters,
-
       // see http://code.google.com/p/guava-libraries/issues/detail?id=1095
-      "com.google.code.findbugs" % "jsr305" % "1.3.+"
+      "com.google.code.findbugs" % "jsr305" % "1.3.9"
     )
   )
 
   lazy val examplePlay = Project(
     "example",
     file("example")
-  ).dependsOn(managementPlay)
-    .settings(guardianResolver)
+  ).enablePlugins(PlayScala)
+    .dependsOn(managementPlay)
+    .settings(
+      guardianResolver,
+      libraryDependencies += specs
+    )
     .noPublish
 
   def managementProject(name: String) = Project(name, file(name)).settings(Seq(
