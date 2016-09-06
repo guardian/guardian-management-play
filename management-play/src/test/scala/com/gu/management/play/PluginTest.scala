@@ -1,12 +1,13 @@
 package com.gu.management.play
 
-import play.api.{Configuration, Mode, Environment}
-import org.specs2.mutable.Specification
+import play.api.{Configuration, Environment, Mode}
+import org.specs2.mutable.{BeforeAfter, Specification}
 import play.api.test._
 import play.api.test.Helpers._
 import com.gu.management.internal.ManagementServer
 import play.api.inject.guice.GuiceApplicationBuilder
 import com.gu.management._
+
 import scala.io.Source
 
 object TestManagement extends Management {
@@ -22,28 +23,39 @@ object TestManagement extends Management {
 object PluginTest extends Specification {
 
   "plugin" should {
-    "be created" in {
+    "be created" in new Context {
       running(FakeApplication()) {
         configuredAppBuilder.injector.instanceOf[InternalManagementServer].
           aka("Internal Management Server") must beLike {
           case server: InternalManagementServer => ok
-          }
+        }
       }
     }
-    "start management server" in {
+    "start management server in a fixed port" in new Context {
+      running(FakeApplication()) {
+        InternalManagementServer.start(configuredAppBuilder, TestManagement, 18000)
+        ManagementServer.isRunning must beTrue
+      }
+    }
+    "start management server in an auto port" in new Context {
       running(FakeApplication()) {
         InternalManagementServer.start(configuredAppBuilder, TestManagement)
         ManagementServer.isRunning must beTrue
       }
     }
-    "serve management page" in {
+    "serve management page" in new Context {
       running(FakeApplication()) {
         InternalManagementServer.start(configuredAppBuilder, TestManagement)
-        val port = ManagementServer.port()
+        val port = ManagementServer.port
         val response = Source.fromURL(s"http://localhost:$port/management/test") mkString ""
         response must be equalTo "response"
       }
     }
+  }
+
+  trait Context extends BeforeAfter {
+    def before: Any = {}
+    def after: Any = ManagementServer.shutdown()
   }
 
   def configuredAppBuilder = {

@@ -21,7 +21,7 @@ class InternalManagementModule extends Module {
 }
 
 trait InternalManagementServer {
-  def startServer(applicationName: String, pages: List[ManagementPage])
+  def startServer(applicationName: String, pages: List[ManagementPage], port: Option[Int] = None)
 }
 
 @Singleton
@@ -30,12 +30,13 @@ class InternalManagementServerImpl @Inject() (lifecycle: ApplicationLifecycle)
 
   implicit val log = Logger(getClass)
 
-  def startServer(applicationNameParam: String, pagesParam: List[ManagementPage]): Unit = {
+  def startServer(applicationNameParam: String, pagesParam: List[ManagementPage], port: Option[Int]): Unit = {
     log.info(s"Starting internal management server for $applicationNameParam")
-    ManagementServer.start(new ManagementHandler {
+    val handler = new ManagementHandler {
       val applicationName = applicationNameParam
       val pages = pagesParam
-    })
+    }
+    port.fold(ManagementServer.start(handler))(ManagementServer.start(handler, _))
   }
 
   lifecycle.addStopHook { () =>
@@ -49,5 +50,10 @@ object InternalManagementServer {
   def start(app: Application, management: Management): Unit = {
     val server = app.injector.instanceOf[InternalManagementServer]
     server.startServer(management.applicationName, management.pages)
+  }
+
+  def start(app: Application, management: Management, port: Int): Unit = {
+    val server = app.injector.instanceOf[InternalManagementServer]
+    server.startServer(management.applicationName, management.pages, Some(port))
   }
 }
