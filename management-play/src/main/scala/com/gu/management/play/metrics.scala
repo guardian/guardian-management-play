@@ -5,49 +5,47 @@ import _root_.play.api.mvc._
 import concurrent.Future
 import util.Try
 import com.gu.management._
+import akka.stream.Materializer
+import javax.inject.{Singleton, Inject}
 
 object RequestMetrics {
 
-  trait Standard {
+  @Singleton class Standard @Inject() (mat: Materializer) {
     val knownResultTypeCounters = List(OkCounter(), RedirectCounter(), NotFoundCounter(), ErrorCounter())
 
     val otherCounter = OtherCounter(knownResultTypeCounters)
 
-    val asFilters: List[MetricsFilter] = List(TimingFilter(), CountersFilter(otherCounter :: knownResultTypeCounters))
+    val asFilters: List[MetricsFilter] = List(new TimingFilter(mat), new CountersFilter(otherCounter :: knownResultTypeCounters, mat))
 
     val asMetrics: List[Metric] = asFilters.flatMap(_.metrics).distinct
   }
 
-  trait MetricsFilter extends Filter {
+  abstract class MetricsFilter extends Filter {
     val metrics: Seq[Metric]
   }
 
-  object TimingFilter {
-    def apply(): MetricsFilter = {
-      val timingMetric = new TimingMetric("performance", "request_duration", "Client requests", "incoming requests to the application")
+  class TimingFilter(override val mat: Materializer) extends MetricsFilter {
+    val timingMetric = new TimingMetric("performance", "request_duration", "Client requests", "incoming requests to the application")
 
-      new MetricsFilter {
-        val metrics = Seq(timingMetric)
+    val metrics = Seq(timingMetric)
 
-        override def apply(next: RequestHeader => Future[Result])(request: RequestHeader): Future[Result] = {
-          val s = new StopWatch
-          val result = next(request)
-          result.onComplete { _ => timingMetric.recordTimeSpent(s.elapsed) }
-          result
-        }
-      }
+    override def apply(next: RequestHeader => Future[Result])(request: RequestHeader): Future[Result] = {
+      val s = new StopWatch
+      val result = next(request)
+      println(s"Hello Timing $request")
+      result.onComplete { _ => timingMetric.recordTimeSpent(s.elapsed) }
+      result
     }
   }
-
-  object CountersFilter {
-    def apply(counters: List[Counter]): MetricsFilter = new MetricsFilter {
-      val metrics = counters.map(_.countMetric)
-
-      override def apply(next: RequestHeader => Future[Result])(request: RequestHeader): Future[Result] = {
-        val result = next(request)
-        result.onComplete(resultTry => counters.foreach(_.submit(resultTry)))
-        result
-      }
+  
+  class CountersFilter(counters: List[Counter], override val mat: Materializer) extends MetricsFilter {
+    val metrics = counters.map(_.countMetric)
+    
+    override def apply(next: RequestHeader => Future[Result])(request: RequestHeader): Future[Result] = {
+      val result = next(request)
+      println(s"Hello Counters $request")
+      result.onComplete(resultTry => counters.foreach(_.submit(resultTry)))
+      result
     }
   }
 
