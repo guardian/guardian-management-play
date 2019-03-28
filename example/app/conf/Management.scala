@@ -3,6 +3,8 @@ package conf
 import com.gu.management._
 import com.gu.management.logback._
 import com.gu.management.play.{Management, RequestMetrics}
+import akka.stream.Materializer
+import javax.inject.{Singleton, Inject}
 
 // example of creating your own new page type
 class DummyPage extends ManagementPage {
@@ -18,7 +20,8 @@ object Switches {
   val all = List(omniture, takeItDown, Healthcheck.switch)
 }
 
-object PlayExampleRequestMetrics extends RequestMetrics.Standard
+@Singleton
+class PlayExampleRequestMetrics @Inject() (mat: Materializer) extends RequestMetrics.Standard(mat)
 
 // properties
 object Properties {
@@ -27,13 +30,14 @@ object Properties {
   val all = "key1=value1\nkey2=value2"
 }
 
-object ExampleManagement extends Management {
+@Singleton
+class ExampleManagement @Inject() (metrics: PlayExampleRequestMetrics) extends Management {
   val applicationName: String = "Example Play App"
   lazy val pages = List(
     new DummyPage(),
     new ManifestPage(),
     new Switchboard(applicationName, Switches.all),
-    StatusPage(applicationName, ExceptionCountMetric :: ServerErrorCounter :: ClientErrorCounter :: PlayExampleRequestMetrics.asMetrics),
+    StatusPage(applicationName, ExceptionCountMetric :: ServerErrorCounter :: ClientErrorCounter :: metrics.asMetrics),
     new HealthcheckManagementPage(),
     new PropertiesPage(Properties.all),
     new LogbackLevelPage(applicationName)

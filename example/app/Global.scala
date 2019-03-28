@@ -1,10 +1,13 @@
 import com.gu.management.play.InternalManagementServer
 import conf.{ExampleManagement, PlayExampleRequestMetrics}
 import play.api.Application
-import play.api.mvc.WithFilters
+import play.api.http.HttpFilters
+import javax.inject.{Singleton, Inject}
 
-object Global extends WithFilters(PlayExampleRequestMetrics.asFilters: _*) {
-  override def onStart(app: Application): Unit = {
-    InternalManagementServer.start(app, ExampleManagement)
-  }
+class Filters @Inject() (metrics: PlayExampleRequestMetrics) extends HttpFilters {
+  override def filters = metrics.asFilters
+}
+
+@Singleton class Global @Inject() (app: Application, management: ExampleManagement) {
+  InternalManagementServer.start(app, management)
 }

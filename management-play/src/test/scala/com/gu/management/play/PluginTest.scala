@@ -23,26 +23,20 @@ object PluginTest extends Specification {
 
   "plugin" should {
     "be created" in {
-      running(FakeApplication()) {
-        configuredAppBuilder.injector.instanceOf[InternalManagementServer].
-          aka("Internal Management Server") must beLike {
-          case server: InternalManagementServer => ok
-          }
-      }
+      configuredAppBuilder.injector.instanceOf[InternalManagementServer].
+        aka("Internal Management Server") must beLike {
+        case server: InternalManagementServer => ok
+        }
     }
     "start management server" in {
-      running(FakeApplication()) {
-        InternalManagementServer.start(configuredAppBuilder, TestManagement)
-        ManagementServer.isRunning must beTrue
-      }
+      InternalManagementServer.start(configuredAppBuilder, TestManagement)
+      ManagementServer.isRunning must beTrue
     }
     "serve management page" in {
-      running(FakeApplication()) {
-        InternalManagementServer.start(configuredAppBuilder, TestManagement)
-        val port = ManagementServer.port()
-        val response = Source.fromURL(s"http://localhost:$port/management/test") mkString ""
-        response must be equalTo "response"
-      }
+      InternalManagementServer.start(configuredAppBuilder, TestManagement)
+      val port = ManagementServer.port()
+      val response = Source.fromURL(s"http://localhost:$port/management/test") mkString ""
+      response must be equalTo "response"
     }
   }
 

@@ -4,10 +4,11 @@ import com.gu.management.play.{ Management => GuManagement }
 import scala.concurrent.{Future, Await}
 import com.gu.management.{ErrorResponse, ManagementPage, HttpRequest, PlainTextResponse}
 import scala.concurrent.duration._
-import play.api.libs.ws.WS
+import javax.inject.Inject
+import play.api.libs.ws.WSClient
 import play.api.Play.current
 
-class UrlPagesHealthcheckManagementPage(val urls: String*) extends ManagementPage {
+class UrlPagesHealthcheckManagementPage @Inject() (wsClient: WSClient, val urls: String*) extends ManagementPage {
 
   import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
@@ -17,7 +18,7 @@ class UrlPagesHealthcheckManagementPage(val urls: String*) extends ManagementPag
 
   override def get(req: HttpRequest) = {
 
-    def fetch(url: String) = WS.url(url).withHeaders("X-Gu-Management-Healthcheck" -> "true").get()
+    def fetch(url: String) = wsClient.url(url).withHeaders("X-Gu-Management-Healthcheck" -> "true").get()
 
     val checks = urls map { base + _ } map { url => fetch(url).map{ response => url -> response } }
     val sequenced = Future.sequence(checks)
