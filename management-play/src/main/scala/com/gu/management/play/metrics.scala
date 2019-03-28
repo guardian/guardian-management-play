@@ -32,7 +32,6 @@ object RequestMetrics {
     override def apply(next: RequestHeader => Future[Result])(request: RequestHeader): Future[Result] = {
       val s = new StopWatch
       val result = next(request)
-      println(s"Hello Timing $request")
       result.onComplete { _ => timingMetric.recordTimeSpent(s.elapsed) }
       result
     }
@@ -43,7 +42,6 @@ object RequestMetrics {
     
     override def apply(next: RequestHeader => Future[Result])(request: RequestHeader): Future[Result] = {
       val result = next(request)
-      println(s"Hello Counters $request")
       result.onComplete(resultTry => counters.foreach(_.submit(resultTry)))
       result
     }

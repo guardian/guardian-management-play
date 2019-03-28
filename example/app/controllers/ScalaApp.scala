@@ -5,7 +5,7 @@ import com.gu.management.Switch.On
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 
-object ScalaApp extends Controller {
+class ScalaApp extends Controller {
   def apply() = Action {
     conf.Switches.takeItDown match {
       case On() => InternalServerError("Temporarily switched off!")
