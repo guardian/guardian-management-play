@@ -21,10 +21,6 @@ object TestManagement extends Management {
 
 object PluginTest extends Specification {
 
-  val fakeApp = new GuiceApplicationBuilder()
-    .in(Mode.Test)
-    .build
-
   "plugin" should {
     "be created" in {
       configuredAppBuilder.injector.instanceOf[InternalManagementServer].
