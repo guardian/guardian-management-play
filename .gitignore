@@ -18,3 +18,4 @@ out/
 example-play/logs
 
 application.log
+!.github
